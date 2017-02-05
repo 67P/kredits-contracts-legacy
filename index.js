@@ -1,4 +1,4 @@
-const Contracts = require('./contracts.js');
+const Contracts = require('./lib/contracts.js');
 
 module.exports = function (web3) {
   let contracts = {};
