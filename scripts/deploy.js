@@ -8,9 +8,13 @@ const Web3 = require('web3');
 const Config = require(path.join(__dirname, '..', 'config/contracts.js'));
 
 let providerURL = process.env.PROVIDER_URL || 'http://parity.kosmos.org:8545';
+console.log(`connecting to ${providerURL}`);
+
 let web3 = new Web3(new Web3.providers.HttpProvider(providerURL));
 
 let deployAccount = web3.eth.accounts[0];
+console.log(`using account: ${deployAccount}`);
+
 let contractSources = {};
 let contracts = {};
 
@@ -23,6 +27,7 @@ fs.readdir('contracts', (err, files) => {
     }
   });
 
+  console.log('compiling contracts. please wait...');
   let compiledContracts = solc.compile({sources: contractSources}, 1);
 
   let deployPromisses = [];
@@ -38,7 +43,6 @@ fs.readdir('contracts', (err, files) => {
 
     deployPromisses.push(new Promise((resolve, reject) => {
       contract.new(...Config.contracts[contractName].args, {from: deployAccount, data: bytecode, gas: gasEstimate}, function (err, deployedContract) {
-        console.log('deployment callback');
         if (err) {
           console.log(err);
           reject(err);
@@ -58,10 +62,7 @@ fs.readdir('contracts', (err, files) => {
     let fileContent = `module.exports = ${JSON.stringify(contracts)};`;
     fs.writeFileSync('lib/contracts.js', fileContent);
 
-    console.log('deployed to: ');
-    deployedContracts.forEach((c) => {
-      console.log(c.address);
-    });
+    console.log('contracts details written to lib/contracts.js');
   });
 });
 
