@@ -33,10 +33,10 @@ contract Kredits is Token {
   address public creator;
   string public ipfsHash;
 
-  event ContributorAdded(address _address, string _id, string _name, string _ipfsHash, bool _isCore);
-  event ProposalCreated(uint256 _id, address _creator, address _recipient, uint256 _amount, string _url, string _ipfsHash);
-  event ProposalVoted(uint256 _id, address _voter);
-  event ProposalExecuted(uint256 _id, address _recipient, uint256 _amount, string _url, string _ipfsHash);
+  event ContributorAdded(address account, string id, string name, string ipfsHash, bool isCore);
+  event ProposalCreated(uint256 id, address creator, address recipient, uint256 amount, string url, string ipfsHash);
+  event ProposalVoted(uint256 id, address voter);
+  event ProposalExecuted(uint256 id, address recipient, uint256 amount, string url, string ipfsHash);
 
   modifier coreOnly() { if (!contributors[msg.sender].isCore) { throw; } _; }
   modifier contributorOnly() { if (!contributors[msg.sender].exists) { throw; } _; }
