@@ -35,6 +35,7 @@ contract Kredits is Token {
 
   event ContributorAdded(address _address, string _id, string _name, string _ipfsHash, bool _isCore);
   event ProposalCreated(uint256 _id, address _creator, address _recipient, uint256 _amount, string _url, string _ipfsHash);
+  event ProposalVoted(uint256 _id, address _voter);
   event ProposalExecuted(uint256 _id, address _recipient, uint256 _amount, string _url, string _ipfsHash);
 
   modifier coreOnly() { if (!contributors[msg.sender].isCore) { throw; } _; }
@@ -128,6 +129,7 @@ contract Kredits is Token {
       executeProposal(_proposalId);
       _executed = true;
     }
+    ProposalVoted(_pId, msg.sender);
   }
 
   function executeProposal(uint proposalId) private returns (bool) {
