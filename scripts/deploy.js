@@ -7,6 +7,9 @@ const Web3 = require('web3');
 
 const Config = require(path.join(__dirname, '..', 'config/contracts.js'));
 
+let currentContracts = require(path.join(__dirname, '..', 'lib/contracts.js'));
+let network = process.argv[2] || 'testnet';
+
 let providerURL = process.env.PROVIDER_URL || 'http://parity.kosmos.org:8545';
 console.log(`connecting to ${providerURL}`);
 
@@ -46,23 +49,29 @@ fs.readdir('contracts', (err, files) => {
         if (err) {
           console.log(err);
           reject(err);
-        }
-        if (!deployedContract.address) {
-          console.log(`transaction hash for ${contractName}: ${deployedContract.transactionHash}`);
-        } else { // check address on the second call (contract deployed)
-          console.log(`address for ${contractName}: ${deployedContract.address}`);
-          contracts[contractName].address = deployedContract.address;
-          resolve(deployedContract);
+        } else {
+          if (!deployedContract.address) {
+            console.log(`transaction hash for ${contractName}: ${deployedContract.transactionHash}`);
+          } else { // check address on the second call (contract deployed)
+            console.log(`address for ${contractName}: ${deployedContract.address}`);
+            contracts[contractName].address = deployedContract.address;
+            resolve(deployedContract);
+          }
         }
       });
     }));
   });
 
   Promise.all(deployPromisses).then((deployedContracts) => {
-    let fileContent = `module.exports = ${JSON.stringify(contracts)};`;
+    let newContracts = currentContracts;
+    newContracts[network] = contracts;
+    let fileContent = `module.exports = ${JSON.stringify(newContracts)};`;
     fs.writeFileSync('lib/contracts.js', fileContent);
 
-    console.log('contracts details written to lib/contracts.js');
+    console.log(`contracts details for ${network}  written to lib/contracts.js`);
+  }).catch((err) => {
+    console.log('error deploying contracts');
+    console.log(err);
   });
 });
 

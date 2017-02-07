@@ -146,6 +146,6 @@ contract Kredits is Token {
  
   function kill() public noEther {
     if(msg.sender != creator) { throw; }
-    suicide(creator);
+    selfdestruct(creator);
   }
 }

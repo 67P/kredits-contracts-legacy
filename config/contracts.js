@@ -2,7 +2,7 @@ module.exports = {
   contracts: {
     Kredits: {
       args: [''],
-      gas: 3000000
+      gas: 4000000
     }
   }
 };
