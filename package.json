@@ -1,14 +1,15 @@
 {
   "name": "kredits-contracts",
   "version": "1.0.2",
-  "description": "",
+  "description": "Ethereum smart contracts for Kosmos Kredits",
+  "repository": "https://github.com/67P/kredits-contracts",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "node scripts/deploy.js",
     "console": "node scripts/console.js"
   },
-  "author": "",
+  "author": "Michael Bumann",
   "license": "MIT",
   "devDependencies": {
     "solc": "*",
