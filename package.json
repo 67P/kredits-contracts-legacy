@@ -12,6 +12,7 @@
   "author": "Michael Bumann",
   "license": "MIT",
   "devDependencies": {
+    "ethereumjs-testrpc": "^3.0.3",
     "solc": "*",
     "web3": "*"
   }
