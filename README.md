@@ -11,9 +11,9 @@ contracts, which are issuing and managing [Kosmos Kredits](https://wiki.kosmos.o
 
 ...
 
-## Browser IDE
+## Remix IDE
 
-[Solidity Browser](https://ethereum.github.io/browser-solidity/) can be used as
+[Solidity Browser (Remix)](https://ethereum.github.io/browser-solidity/) can be used as
 an interactive IDE for contract development in the browser, with no running
 node or contract deployment needed.
 
