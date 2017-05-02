@@ -4,7 +4,7 @@ const solc = require('solc');
 const Web3 = require('web3');
 const glob = require('glob');
 
-/* naiv and hacky try for a custom deployment script */
+/* naive and hacky try for a custom deployment script */
 
 const Config = require(path.join(__dirname, '..', 'config/contracts.js'));
 
@@ -16,7 +16,7 @@ let overwrite = process.argv[3] || false;
 
 if (network === 'dev') {
   providerURL = process.env.PROVIDER_URL || 'http://localhost:8545';
-} else if (network == 'testnet') {
+} else if (network === 'testnet') {
   providerURL = process.env.PROVIDER_URL || 'http://parity.kosmos.org:8545';
 } else {
   console.log('network not supported: ' + network);
@@ -45,9 +45,9 @@ glob("contracts/**/*.sol", (err, files) => {
   console.log('compiling contracts. please wait...');
   let compiledContracts = solc.compile({sources: contractSources}, 1);
 
-  let deployPromisses = [];
+  let deployPromises = [];
   //Object.keys(Config.contracts).forEach((contractName) => {
-  ['Token', 'TokenFactory'].forEach((contractName) => {
+  ['Token', 'Kredits'].forEach((contractName) => {
     console.log(`processing ${contractName}`);
     console.log(Object.keys(compiledContracts.contracts));
     let compiled = compiledContracts.contracts['contracts/' + contractName + '.sol:' + contractName];
@@ -59,7 +59,7 @@ glob("contracts/**/*.sol", (err, files) => {
     let contract = web3.eth.contract(abi);
     console.log(`deploying contract ${contractName} with gas ${gasEstimate}`);
 
-    deployPromisses.push(new Promise((resolve, reject) => {
+    deployPromises.push(new Promise((resolve, reject) => {
       contract.new(...(contractConfig.args||[]), {from: deployAccount, data: bytecode, gas: gasEstimate}, function (err, deployedContract) {
         if (err) {
           console.log(err);
@@ -77,7 +77,7 @@ glob("contracts/**/*.sol", (err, files) => {
     }));
   });
 
-  Promise.all(deployPromisses).then((deployedContracts) => {
+  Promise.all(deployPromises).then(() => {
     let newContracts = currentContracts;
     if (overwrite) {
       newContracts[network] = contracts;
@@ -98,4 +98,3 @@ glob("contracts/**/*.sol", (err, files) => {
     console.log(err);
   });
 });
-
