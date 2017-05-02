@@ -11,6 +11,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "glob": "*",
     "solc": "*",
     "web3": "*"
   }

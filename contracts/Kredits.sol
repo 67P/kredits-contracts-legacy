@@ -127,7 +127,7 @@ contract Kredits {
     if(p.executed) { throw; }
     if(p.votesCount < p.votesNeeded) { throw; }
     addContributor(p.recipient, "", "", false, "");
-    kredits.mintFor(p.recipient, p.amount);
+    kredits.mintFor(p.recipient, p.amount, "");
     p.executed = true;
     ProposalExecuted(proposalId, p.recipient, p.amount, p.url, p.ipfsHash);    
     return true;
