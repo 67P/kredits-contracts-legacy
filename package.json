@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "node scripts/deploy.js",
-    "console": "node scripts/console.js"
+    "console": "node scripts/console.js",
+    "abi": "node scripts/abi.js"
   },
   "author": "",
   "license": "MIT",
