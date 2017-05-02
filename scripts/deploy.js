@@ -50,7 +50,14 @@ glob("contracts/**/*.sol", (err, files) => {
   ['Token', 'Kredits'].forEach((contractName) => {
     console.log(`processing ${contractName}`);
     console.log(Object.keys(compiledContracts.contracts));
-    let compiled = compiledContracts.contracts['contracts/' + contractName + '.sol:' + contractName];
+
+    let compiled;
+    if (contractName.indexOf('.sol') !== -1) {
+      compiled = compiledContracts.contracts['contracts/' + contractName + '.sol:' + contractName];
+    } else {
+      compiled = compiledContracts.contracts[contractName];
+    }
+
     let abi = JSON.parse(compiled.interface);
     let bytecode = '0x' + compiled.bytecode;
     contracts[contractName] = {abi: abi};
