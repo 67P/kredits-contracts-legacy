@@ -4,15 +4,24 @@
   "description": "Ethereum smart contracts for Kosmos Kredits",
   "repository": "https://github.com/67P/kredits-contracts",
   "main": "index.js",
+  "bin": {
+    "kredits-deploy": "scripts/deploy.js",
+    "kredits-console": "scripts/console.js",
+    "kredits-inspect": "scripts/inspect.js",
+    "kredits-parity": "scripts/parity.sh"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "node scripts/deploy.js",
-    "console": "node scripts/console.js"
+    "kredits-deploy": "node scripts/deploy.js",
+    "kredits-parity": "scripts/parity",
+    "kredits-console": "node scripts/console.js",
+    "kredits-inspect": "node scripts/inspect.js"
   },
   "author": "Michael Bumann",
   "license": "MIT",
   "devDependencies": {
-    "ethereumjs-testrpc": "^3.0.3",
+    "commander": "^2.9.0",
+    "glob": "*",
     "solc": "*",
     "web3": "*"
   }

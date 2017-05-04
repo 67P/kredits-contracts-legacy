@@ -1,16 +1,13 @@
-const Contracts = require('./lib/contracts.js');
-
-module.exports = function (web3, chain, contractAddresses) {
-  var contracts = {};
+module.exports = function (web3, chain, overwriteAddresses) {
   var network = chain || 'main';
-  Object.keys(Contracts[network]).forEach(function (contractName) {
-    var address;
-    if (contractAddresses && contractAddresses[contractName]) {
-      address = contractAddresses[contractName];
-    } else {
-      address = Contracts[network][contractName].address;
-    }
-    contracts[contractName] = web3.eth.contract(Contracts[network][contractName].abi).at(address);
+  var contractAbi = require('./lib/' + network + '/abi.js');
+  var addresses = require('./lib/' + network + '/address.js');
+  var contractAddresses = overwriteAddresses || addresses;
+
+  var contracts = {};
+  Object.keys(contractAbi).forEach(function (contractName) {
+    var address = contractAddresses[contractName];
+    contracts[contractName] = web3.eth.contract(contractAbi[contractName]).at(address);
   });
   return contracts;
 };

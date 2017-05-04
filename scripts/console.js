@@ -1,18 +1,52 @@
+#!/usr/bin/env node
+
 const Web3 = require('web3');
 const repl = require('repl');
+const util = require('util');
+const program = require('commander');
 
-let providerURL = process.env.PROVIDER_URL || 'http://parity.kosmos.org:8545';
+program
+  .version('77')
+  .option('-n, --network <dev|test|main>', 'ethereum network')
+  .option('-p, --provider-url <url>', 'ethereum node provider url. defaults to localhost for dev and to parity.kosmos.org for test/main')
+  .option('-a, --account <account address>', 'account to use as creator. defaults to web3.eth.accounts[0]')
+  .parse(process.argv);
+
+let network = program.network || 'test';
+let providerURL;
+if (network === 'dev') {
+  providerURL = program.providerUrl || 'http://localhost:8545';
+} else if (network === 'test') {
+  providerURL = program.providerURL || 'http://parity.kosmos.org:8545';
+} else {
+  console.log('network not supported: ' + network);
+  process.exit();
+}
 console.log(`connecting to ${providerURL}`);
+
 global.web3 = new Web3(new Web3.providers.HttpProvider(providerURL));
 
-var network = process.argv[2] || 'testnet';
-console.log(`using chain: ${network}`);
+let account = program.account || global.web3.eth.accounts[0];
+
 global.contracts = require('../index.js')(global.web3, network);
 
 Object.keys(global.contracts).forEach((contractName) => {
   global[contractName] = global.contracts[contractName];
+  global[contractName].allEvents({fromBlock: 'latest'}).watch((err, e) => {
+    if (err) {
+      console.log('event error:');
+      console.log(err);
+    } else {
+      global['latestEvent'] = e;
+      console.log(`Event: ${e.event}(${util.inspect(e.args)})`);
+    }
+  });
 });
+
+global.web3.eth.defaultAccount = account;
+
 console.log('Available contracts: ');
 console.log(Object.keys(global.contracts));
 
+console.log(`accounts: ${util.inspect(global.web3.eth.accounts)}`);
 repl.start('ETH> ');

@@ -2,7 +2,7 @@ pragma solidity ^0.4.1;
 
 import './Token.sol';
 
-contract Kredits is Token {
+contract Kredits {
   struct Person {
     string id;
     string name;
@@ -23,7 +23,7 @@ contract Kredits is Token {
     bool exists;
   }
 
-
+  Token kredits;
   Proposal[] public proposals;
   uint votesNeeded;
 
@@ -42,18 +42,15 @@ contract Kredits is Token {
   modifier contributorOnly() { if (!contributors[msg.sender].exists) { throw; } _; }
   modifier noEther() { if (msg.value > 0) throw; _; }
 
-  function Kredits(string _ipfsHash) {
-    name = "Kredit"; 
-    symbol = "₭S";
-    decimals = 0;
-    totalSupply = 0;
+  function Kredits(address tokenAddress, address contributor, string _ipfsHash) {
+    votesNeeded = 2;
+    kredits = Token(tokenAddress);
     creator = msg.sender;
     ipfsHash = _ipfsHash;
-    Person p = contributors[msg.sender];
+    Person p = contributors[contributor];
     p.exists = true;
     p.isCore = true;
-    contributorAddresses.push(msg.sender);
-    votesNeeded = 2;
+    contributorAddresses.push(contributor);
   }
 
   function contributorsCount() constant returns (uint) {
@@ -63,14 +60,7 @@ contract Kredits is Token {
     return proposals.length;
   }
 
-  function mintFor(address _recipient, uint256 _amount) noEther coreOnly returns (bool success) {
-    addContributor(_recipient, "", "", false, "");
-    totalSupply = totalSupply + _amount;
-    balances[_recipient] += _amount;
-    return true;
-  }
-
-  function addContributor(address _address, string _name, string _ipfsHash, bool isCore, string _id) noEther coreOnly returns (bool success) {
+  function addContributor(address _address, string _name, string _ipfsHash, bool isCore, string _id) noEther returns (bool success) {
     if(contributors[_address].exists != true) {
       Person p = contributors[_address];
       p.exists = true;
@@ -137,7 +127,7 @@ contract Kredits is Token {
     if(p.executed) { throw; }
     if(p.votesCount < p.votesNeeded) { throw; }
     addContributor(p.recipient, "", "", false, "");
-    mintFor(p.recipient, p.amount);
+    kredits.mintFor(p.recipient, p.amount, "");
     p.executed = true;
     ProposalExecuted(proposalId, p.recipient, p.amount, p.url, p.ipfsHash);    
     return true;
