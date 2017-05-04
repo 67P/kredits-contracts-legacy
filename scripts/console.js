@@ -12,12 +12,12 @@ program
   .option('-a, --account <account address>', 'account to use as creator. defaults to web3.eth.accounts[0]')
   .parse(process.argv);
 
-let network = program.network || 'test';
+let network = program.network || 'dev';
 let providerURL;
 if (network === 'dev') {
   providerURL = program.providerUrl || 'http://localhost:8545';
 } else if (network === 'test') {
-  providerURL = program.providerURL || 'http://parity.kosmos.org:8545';
+  providerURL = program.providerURL || 'https://parity.kosmos.org:8545';
 } else {
   console.log('network not supported: ' + network);
   process.exit();
@@ -28,7 +28,7 @@ global.web3 = new Web3(new Web3.providers.HttpProvider(providerURL));
 
 let account = program.account || global.web3.eth.accounts[0];
 
-global.contracts = require('../index.js')(global.web3, network);
+global.contracts = require('../index.js')(global.web3);
 
 Object.keys(global.contracts).forEach((contractName) => {
   global[contractName] = global.contracts[contractName];

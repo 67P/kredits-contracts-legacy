@@ -27,10 +27,12 @@ let defaultGas = program.gas;
 let providerURL;
 let contractsToDeploy = program.contracts;
 let overwriteMetadata = program.overwriteMetadata || false;
+let contractsDirectory = path.join(path.join(__dirname), '..', 'contracts');
+
 if (contractsToDeploy) {
   contractsToDeploy = contractsToDeploy.split(',');
 } else {
-  contractsToDeploy = glob.sync('contracts/*.sol').map((file) => {
+  contractsToDeploy = glob.sync(path.join(contractsDirectory, '*.sol')).map((file) => {
     return file.match(/.+\/(.+)\.sol/)[1];
   });
 }
@@ -38,7 +40,7 @@ if (contractsToDeploy) {
 if (network === 'dev') {
   providerURL = program.providerUrl || 'http://localhost:8545';
 } else if (network === 'test') {
-  providerURL = program.providerURL || 'http://parity.kosmos.org:8545';
+  providerURL = program.providerURL || 'https://parity.kosmos.org:8545';
 } else {
   console.log('network not supported: ' + network);
   process.exit();
@@ -55,17 +57,17 @@ let contractsMetadata = {'abi': {}, 'bytecode': {}, 'address': {}};
 if (!overwriteMetadata) {
   Object.keys(contractsMetadata).forEach((m) => {
     try {
-      contractsMetadata[m] = require(path.join(__dirname, '..', `lib/${network}/${m}.js`));
+      contractsMetadata[m] = require(path.join(__dirname, '..', `lib/${m}.js`));
     } catch (e) {}
   });
 }
 
-glob('contracts/**/*.sol', (err, files) => {
+glob(path.join(contractsDirectory, '/**/*.sol'), (err, files) => {
   if (err) { console.log(err); process.exit(1); }
 
   files.forEach((file) => {
     if (file.match(/\.sol/)) {
-      contractSources[file] = fs.readFileSync(path.join(__dirname, '..', file)).toString('utf8');
+      contractSources[file] = fs.readFileSync(file).toString('utf8');
     }
   });
 
@@ -113,9 +115,9 @@ glob('contracts/**/*.sol', (err, files) => {
     let directory = program.directory || path.join(__dirname, '..', 'lib');
     ['abi', 'address', 'bytecode'].forEach((metadata) => {
       let fileContent = `module.exports = ${JSON.stringify(contractsMetadata[metadata])};`;
-      fs.writeFileSync(path.join(directory, network, `${metadata}.js`), fileContent);
+      fs.writeFileSync(path.join(directory, `${metadata}.js`), fileContent);
     });
-    console.log(`contracts metadata for ${network}  written to ${directory}/${network}`);
+    console.log(`contracts metadata for ${network}  written to ${directory}`);
   }).catch((err) => {
     console.log('error deploying contracts');
     console.log(err);
