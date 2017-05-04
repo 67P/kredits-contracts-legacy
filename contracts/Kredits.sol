@@ -60,7 +60,7 @@ contract Kredits {
     return proposals.length;
   }
 
-  function addContributor(address _address, string _name, string _ipfsHash, bool isCore, string _id) noEther coreOnly returns (bool success) {
+  function addContributor(address _address, string _name, string _ipfsHash, bool isCore, string _id) noEther returns (bool success) {
     if(contributors[_address].exists != true) {
       Person p = contributors[_address];
       p.exists = true;

@@ -3,15 +3,23 @@
   "version": "1.0.2",
   "description": "",
   "main": "index.js",
+  "bin": {
+    "kredits-deploy": "scripts/deploy.js",
+    "kredits-console": "scripts/console.js",
+    "kredits-inspect": "scripts/inspect.js",
+    "kredits-parity": "scripts/parity.sh"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "node scripts/deploy.js",
-    "console": "node scripts/console.js",
-    "abi": "node scripts/abi.js"
+    "kredits-deploy": "node scripts/deploy.js",
+    "kredits-parity": "scripts/parity",
+    "kredits-console": "node scripts/console.js",
+    "kredits-inspect": "node scripts/inspect.js"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "commander": "^2.9.0",
     "glob": "*",
     "solc": "*",
     "web3": "*"
