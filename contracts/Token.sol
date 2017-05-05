@@ -3,7 +3,6 @@ pragma solidity ^0.4.1;
 import './dependencies/SafeMath.sol';
 import './dependencies/Ownable.sol';
 import './dependencies/ERC20.sol';
-import './TokenFactory.sol';
 import './Kredits.sol';
 
 contract Token is ERC20, SafeMath, Ownable {
@@ -71,11 +70,7 @@ contract Token is ERC20, SafeMath, Ownable {
   }
 
   function balanceOf(address _who) constant returns (uint balance) {
-    balance = balances[_who];
-    if(balance == 0) {
-      balance = parentBalanceOf(_who);
-    }
-    return balance;
+    return balances[_who];
   }
 
   function parentBalanceOf(address _who) constant returns (uint) {
@@ -116,9 +111,8 @@ contract Token is ERC20, SafeMath, Ownable {
     }
   }
 
-  function setKredits(address _kredits) onlyOwner returns (bool) {
+  function setKredits(address _kredits) onlyOwner {
     kredits = Kredits(_kredits);
-    return true;
   }
   
   function fork(address _newAddress) onlyOwner {

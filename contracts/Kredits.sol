@@ -28,6 +28,7 @@ contract Kredits {
   uint votesNeeded;
 
   mapping (address => Person) public contributors;
+  mapping (string => address) public userAddresses;
   address[] public contributorAddresses;
 
   address public creator;
@@ -42,15 +43,18 @@ contract Kredits {
   modifier contributorOnly() { if (!contributors[msg.sender].exists) { throw; } _; }
   modifier noEther() { if (msg.value > 0) throw; _; }
 
-  function Kredits(address tokenAddress, address contributor, string _ipfsHash) {
+  function Kredits(string _ipfsHash) {
     votesNeeded = 2;
-    kredits = Token(tokenAddress);
     creator = msg.sender;
     ipfsHash = _ipfsHash;
-    Person p = contributors[contributor];
+    Person p = contributors[msg.sender];
     p.exists = true;
     p.isCore = true;
-    contributorAddresses.push(contributor);
+    contributorAddresses.push(msg.sender);
+  }
+
+  function setTokenAddress(address _address) noEther coreOnly {
+    kredits = Token(_address);
   }
 
   function contributorsCount() constant returns (uint) {
@@ -60,7 +64,7 @@ contract Kredits {
     return proposals.length;
   }
 
-  function addContributor(address _address, string _name, string _ipfsHash, bool isCore, string _id) noEther returns (bool success) {
+  function addContributor(address _address, string _name, string _ipfsHash, bool isCore, string _id) noEther coreOnly returns (bool success) {
     if(contributors[_address].exists != true) {
       Person p = contributors[_address];
       p.exists = true;
@@ -69,6 +73,7 @@ contract Kredits {
       p.ipfsHash = _ipfsHash;
       p.id = _id;
       contributorAddresses.push(_address);
+      userAddresses[_name] = _address;
       ContributorAdded(_address, p.id, p.name, p.ipfsHash, p.isCore);
     }
     return true;
@@ -77,25 +82,15 @@ contract Kredits {
   function updateContributor(address _address, string _name, string _ipfsHash, bool isCore, string _id) noEther coreOnly returns (bool success) {
     if(contributors[_address].exists != true) { throw; }
     Person p = contributors[_address];
+    delete userAddresses[p.name];
+    
     p.exists = true;
     p.isCore = isCore;
     p.name = _name;
     p.ipfsHash = _ipfsHash;
     p.id = _id;
+    userAddresses[p.name] = _address;
     return true;
-  }
-
-  function removeContributor(address _address) noEther coreOnly returns (bool) {
-    contributors[_address].exists = false;
-  }
-
-  function updateProfile(string _name, string _id, string _ipfsHash) contributorOnly noEther returns (bool success) {
-    if(contributors[msg.sender].exists == true) {
-      Person p = contributors[msg.sender];
-      p.name = _name;
-      p.id = _id;
-      p.ipfsHash = _ipfsHash;
-    }
   }
 
   function addProposal(address _recipient, uint256 _amount, string _url, string _ipfsHash) public noEther returns (uint256 proposalId) {
@@ -133,7 +128,6 @@ contract Kredits {
     return true;
   }
 
- 
   function kill() public noEther {
     if(msg.sender != creator) { throw; }
     selfdestruct(creator);
