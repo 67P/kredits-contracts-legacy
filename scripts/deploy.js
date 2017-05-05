@@ -74,6 +74,7 @@ glob(path.join(contractsDirectory, '/**/*.sol'), (err, files) => {
   console.log('compiling contracts. please wait...');
   let compiledContracts = solc.compile({sources: contractSources}, 1);
 
+  console.log(`compiled contracts: ${Object.keys(compiledContracts.contracts)}`);
   let deployPromises = [];
   contractsToDeploy.forEach((contractName) => {
     console.log(`processing ${contractName}`);
@@ -81,9 +82,12 @@ glob(path.join(contractsDirectory, '/**/*.sol'), (err, files) => {
     // hack because of no idea why. worked differently on a mac vs. linux machine
     let compiled = compiledContracts.contracts[contractName];
     if (!compiled) {
-      compiled = compiledContracts.contracts['contracts/' + contractName + '.sol:' + contractName];
+      compiled = compiledContracts.contracts[contractsDirectory + '/' + contractName + '.sol:' + contractName];
     }
 
+    if (!compiled) {
+      console.log(`${contractName} not found in compiled contracts. fatal.`);
+    }
     let abi = JSON.parse(compiled.interface);
     let bytecode = '0x' + compiled.bytecode;
     contractsMetadata['bytecode'][contractName] = bytecode;
