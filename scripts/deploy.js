@@ -74,6 +74,12 @@ glob(path.join(contractsDirectory, '/**/*.sol'), (err, files) => {
   console.log('compiling contracts. please wait...');
   let compiledContracts = solc.compile({sources: contractSources}, 1);
 
+  if (compiledContracts.errors) {
+    console.log('compilation failed with the following errors:');
+    compiledContracts.errors.forEach(error => console.log(error));
+    process.exit(1);
+  }
+
   console.log(`compiled contracts: ${Object.keys(compiledContracts.contracts)}`);
   let deployPromises = [];
   contractsToDeploy.forEach((contractName) => {
