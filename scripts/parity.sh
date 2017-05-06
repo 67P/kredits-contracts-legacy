@@ -2,7 +2,7 @@
 
 path=$(readlink "$0")
 DIR=$( cd "$( dirname "$path}" )" && pwd )
-CONFIGDIR="$DIR/../config"
+CONFIGDIR="$DIR/config"
 
 echo "Hello and Welcome to working on Kredits" 
 
@@ -14,10 +14,9 @@ if [ "$?" -ne 0 ]; then
 fi
 set -e
 
-
 echo "trying to be smart and configuring a local KreditsChain with an account for you"
 
-parityAccounts=$($whichParity account list --chain=$DIR/../config/parity-dev-chain.json)
+parityAccounts=$($whichParity account list --chain=$CONFIGDIR/parity-dev-chain.json)
 if [ "$parityAccounts" == "[]" ]; then
   echo "seems you do not have any parity accounts for the KreditsChain"
 
