@@ -28,7 +28,6 @@ contract Kredits {
   uint votesNeeded;
 
   mapping (address => Person) public contributors;
-  mapping (string => address) public userAddresses;
   address[] public contributorAddresses;
 
   address public creator;
@@ -73,7 +72,6 @@ contract Kredits {
       p.ipfsHash = _ipfsHash;
       p.id = _id;
       contributorAddresses.push(_address);
-      userAddresses[_name] = _address;
       ContributorAdded(_address, p.id, p.name, p.ipfsHash, p.isCore);
     }
     return true;
@@ -82,14 +80,12 @@ contract Kredits {
   function updateContributor(address _address, string _name, string _ipfsHash, bool isCore, string _id) noEther coreOnly returns (bool success) {
     if(contributors[_address].exists != true) { throw; }
     Person p = contributors[_address];
-    delete userAddresses[p.name];
-    
+
     p.exists = true;
     p.isCore = isCore;
     p.name = _name;
     p.ipfsHash = _ipfsHash;
     p.id = _id;
-    userAddresses[p.name] = _address;
     return true;
   }
 
