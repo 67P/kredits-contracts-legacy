@@ -3,27 +3,32 @@
 path=$(readlink "$0")
 DIR=$( cd "$( dirname "$path}" )" && pwd )
 CONFIGDIR="$DIR/config"
+CONFIGPATH=$CONFIGDIR/parity-dev-chain.json
 
-echo "Hello and Welcome to working on Kredits" 
+if [ ! -f $CONFIGPATH ]; then
+  cp $CONFIGPATH.example $CONFIGPATH
+fi
+
+echo "Hello and Welcome to working on Kredits"
 
 set +e
 whichParity=$( which parity )
-if [ "$?" -ne 0 ]; then 
-  echo "parity not found. Is parity installed and in your PATH?"; 
+if [ "$?" -ne 0 ]; then
+  echo "parity not found. Is parity installed and in your PATH?";
   exit 1
 fi
 set -e
 
 echo "trying to be smart and configuring a local KreditsChain with an account for you"
 
-parityAccounts=$($whichParity account list --chain=$CONFIGDIR/parity-dev-chain.json)
+parityAccounts=$($whichParity account list --chain=$CONFIGPATH)
 if [ "$parityAccounts" == "[]" ]; then
   echo "seems you do not have any parity accounts for the KreditsChain"
 
-  echo "press ENTER to continue and create a new parity account" 
+  echo "press ENTER to continue and create a new parity account"
   read continue
   echo "settig up a new account with password: $(cat $CONFIGDIR/parity-dev-password)"
-  account=$($whichParity account new --password=$CONFIGDIR/parity-dev-password --chain=$CONFIGDIR/parity-dev-chain.json)
+  account=$($whichParity account new --password=$CONFIGDIR/parity-dev-password --chain=$CONFIGPATH)
   echo "created parity account: $account"
 else
   tmp=${parityAccounts##*[}
@@ -32,10 +37,14 @@ fi
 echo "using account $account; giving you some KreditsChain ether"
 
 replace="s/\".*\":{\"balance\"/\"$account\":{\"balance\"/g"
-sed -i -e "s/\".*\":{\"balance\"/\"$account\":{\"balance\"/g" $CONFIGDIR/parity-dev-chain.json
+sed -i -e "s/\".*\":{\"balance\"/\"$account\":{\"balance\"/g" $CONFIGPATH
 
-echo "running: $whichParity --chain=$CONFIGDIR/parity-dev-chain.json --force-ui $@"
-
-$whichParity --chain=$CONFIGDIR/parity-dev-chain.json --force-ui $@
+set -x
+$whichParity ui --chain=$CONFIGPATH \
+                --force-ui \
+                --unlock=$account \
+                --password=$CONFIGDIR/parity-dev-password \
+                $@
+set +x
 
 echo "thanks for hacking on Kredits <3!"
