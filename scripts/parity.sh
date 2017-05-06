@@ -40,11 +40,12 @@ replace="s/\".*\":{\"balance\"/\"$account\":{\"balance\"/g"
 sed -i -e "s/\".*\":{\"balance\"/\"$account\":{\"balance\"/g" $CONFIGPATH
 
 set -x
-$whichParity ui --chain=$CONFIGPATH \
-                --force-ui \
-                --unlock=$account \
-                --password=$CONFIGDIR/parity-dev-password \
-                $@
+$whichParity --chain=$CONFIGPATH \
+             --force-ui \
+             --reseal-min-period 0 \
+             --unlock=$account \
+             --password=$CONFIGDIR/parity-dev-password \
+             $@
 set +x
 
 echo "thanks for hacking on Kredits <3!"
