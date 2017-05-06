@@ -12,10 +12,10 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "kredits-deploy": "node scripts/deploy.js",
-    "kredits-parity": "scripts/parity",
-    "kredits-console": "node scripts/console.js",
-    "kredits-inspect": "node scripts/inspect.js"
+    "deploy": "node scripts/deploy.js",
+    "parity": "scripts/parity.sh",
+    "console": "node scripts/console.js",
+    "inspect": "node scripts/inspect.js"
   },
   "author": "Michael Bumann",
   "license": "MIT",
