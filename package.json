@@ -15,7 +15,8 @@
     "deploy": "node scripts/deploy.js",
     "parity": "scripts/parity.sh",
     "console": "node scripts/console.js",
-    "inspect": "node scripts/inspect.js"
+    "inspect": "node scripts/inspect.js",
+    "package": "scripts/package.sh"
   },
   "author": "Michael Bumann",
   "license": "MIT",

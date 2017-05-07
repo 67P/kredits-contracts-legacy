@@ -16,7 +16,7 @@ program
   .version(pkg.version)
   .option('-n, --network <dev|test|main>', 'Etherem network for which the contract will be deployed. default: dev')
   .option('-p, --provider-url <url>', 'Ethereum RPC provider url. default: dev=localhost:8545 test/main=parity.kosmos.org')
-  .option('-c, --contracts <Contract,Names>', 'comma sparated list of contracts to deploy. default: all .sol files in the contracts directory')
+  .option('-c, --contracts <Contract,Names>', 'comma sparated list of contracts to deploy. default: all .sol files in the contracts directory', function (val) { return val.split(','); })
   .option('-a, --account <account address>', 'from account address. default: web3.eth.accounts[0]')
   .option('-o, --overwrite-metadata', 'overwrite existing contracts meta data. if true writes new address/abi files and does not merge current data')
   .option('-g, --gas <amount>', 'gas amount to use for deploying contracts')
@@ -127,7 +127,7 @@ contractsToDeploy.forEach((contractName) => {
 // for non manual deployments we wait until the deploy transactions are mined and write the metadata (abi, address) to the lib directory
 if (!manualDeployment) {
   Promise.all(deployPromises).then(() => {
-    let directory = program.directory || path.join(__dirname, '..', 'lib');
+    let directory = program.directory || path.join(__dirname, '..', 'tmp');
     ['abi', 'address', 'bytecode'].forEach((metadata) => {
       let fileContent = `module.exports = ${JSON.stringify(contractsMetadata[metadata])};`;
       fs.writeFileSync(path.join(directory, `${metadata}.js`), fileContent);
