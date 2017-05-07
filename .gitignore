@@ -3,3 +3,4 @@ node_modules
 npm-debug.log
 config/parity-dev-chain.json-e
 config/parity-dev-chain.json
+tmp/*
