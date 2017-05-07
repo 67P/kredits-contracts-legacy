@@ -46,6 +46,5 @@ $whichParity --chain=$CONFIGPATH \
              --unlock=$account \
              --password=$CONFIGDIR/parity-dev-password \
              $@
-set +x
 
 echo "thanks for hacking on Kredits <3!"

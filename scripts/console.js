@@ -4,9 +4,11 @@ const Web3 = require('web3');
 const repl = require('repl');
 const util = require('util');
 const program = require('commander');
+const path = require('path');
+const pkg = require(path.join(__dirname, '../package.json'));
 
 program
-  .version('77')
+  .version(pkg.version)
   .option('-n, --network <dev|test|main>', 'Etherem network for which the contract will be deployed. default: dev')
   .option('-p, --provider-url <url>', 'Ethereum RPC provider url. default: dev=localhost:8545 test/main=parity.kosmos.org')
   .option('-a, --account <account address>', 'from account address. default: web3.eth.accounts[0]')

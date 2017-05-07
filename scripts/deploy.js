@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const pkg = require(path.join(__dirname, '../package.json'));
 const solc = require('solc');
 const Web3 = require('web3');
 const glob = require('glob');
@@ -12,7 +13,7 @@ const program = require('commander');
 const Config = require(path.join(__dirname, '..', 'config/contracts.js'));
 
 program
-  .version('77')
+  .version(pkg.version)
   .option('-n, --network <dev|test|main>', 'Etherem network for which the contract will be deployed. default: dev')
   .option('-p, --provider-url <url>', 'Ethereum RPC provider url. default: dev=localhost:8545 test/main=parity.kosmos.org')
   .option('-c, --contracts <Contract,Names>', 'comma sparated list of contracts to deploy. default: all .sol files in the contracts directory')

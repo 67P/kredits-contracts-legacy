@@ -2,9 +2,10 @@
 
 const program = require('commander');
 const path = require('path');
+const pkg = require(path.join(__dirname, '../package.json'));
 
 program
-  .version('77')
+  .version(pkg.version)
   .option('-w, --what <abi|address|bytecode>', 'what to inspect. default: address')
   .option('-c, --contracts <Contract,Names>', 'comma sparated list of contracts to deploy. default: all contracts found in the meatadata file')
   .option('-r, --raw', 'do not print contract names (when piping output somewhere)')
