@@ -1,8 +1,7 @@
 #!/bin/bash
 
-path=$(readlink "$0")
-DIR=$( cd "$( dirname "$path}" )" && pwd )
-CONFIGDIR="$DIR/config"
+DIR=$(dirname `realpath $0`)
+CONFIGDIR="$DIR/../config"
 CONFIGPATH=$CONFIGDIR/parity-dev-chain.json
 
 if [ ! -f $CONFIGPATH ]; then
@@ -47,4 +46,3 @@ $whichParity --chain=$CONFIGPATH \
              --password=$CONFIGDIR/parity-dev-password \
              $@
 
-echo "thanks for hacking on Kredits <3!"
