@@ -20,15 +20,26 @@ program
   .option('-o, --overwrite-metadata', 'overwrite existing contracts meta data')
   .option('-g, --gas <amount>', 'set GAS amount to use for deploying contracts')
   .option('-d, --directory <path/to/directory>', 'directory path where the contracts metadata should be written to')
+  .option('-m, --manual-deployment', 'print contract deployment data for manual deployment. Does not deploy the contract')
   .parse(process.argv);
 
 let network = program.network || 'dev';
 let defaultGas = program.gas;
-let providerURL;
 let contractsToDeploy = program.contracts;
 let overwriteMetadata = program.overwriteMetadata || false;
 let contractsDirectory = path.join(path.join(__dirname), '..', 'contracts');
+let manualDeployment = program.manualDeployment || false;
 
+let networks = { dev: 'http://localhost:8545', test: 'https://parity.kosmos.org:8545' };
+let providerURL = program.providerUrl || networks[network];
+console.log(`connecting to ${providerURL}`);
+
+let web3 = new Web3(new Web3.providers.HttpProvider(providerURL));
+let deployAccount = program.account || web3.eth.accounts[0];
+console.log(`using account: ${deployAccount}`);
+
+// loading all sources of our contracts that we want to deploy
+// by default these are all .sol files in the ./contracts directory - but not sub directories (like dependencies)
 if (contractsToDeploy) {
   contractsToDeploy = contractsToDeploy.split(',');
 } else {
@@ -37,22 +48,9 @@ if (contractsToDeploy) {
   });
 }
 
-if (network === 'dev') {
-  providerURL = program.providerUrl || 'http://localhost:8545';
-} else if (network === 'test') {
-  providerURL = program.providerURL || 'https://parity.kosmos.org:8545';
-} else {
-  console.log('network not supported: ' + network);
-  process.exit();
-}
-console.log(`connecting to ${providerURL}`);
-
-let web3 = new Web3(new Web3.providers.HttpProvider(providerURL));
-
-let deployAccount = program.account || web3.eth.accounts[0];
-console.log(`using account: ${deployAccount}`);
-
 let contractSources = {};
+// load existing contract metadata (abi/address)
+// helpful when only deploying specific contracts to not loose existing metadata
 let contractsMetadata = {'abi': {}, 'bytecode': {}, 'address': {}};
 if (!overwriteMetadata) {
   Object.keys(contractsMetadata).forEach((m) => {
@@ -62,47 +60,50 @@ if (!overwriteMetadata) {
   });
 }
 
-glob(path.join(contractsDirectory, '/**/*.sol'), (err, files) => {
-  if (err) { console.log(err); process.exit(1); }
-
-  files.forEach((file) => {
-    if (file.match(/\.sol/)) {
-      contractSources[file] = fs.readFileSync(file).toString('utf8');
-    }
-  });
-
-  console.log('compiling contracts. please wait...');
-  let compiledContracts = solc.compile({sources: contractSources}, 1);
-
-  if (compiledContracts.errors) {
-    console.log('compilation failed with the following errors:');
-    compiledContracts.errors.forEach(error => console.log(error));
-    process.exit(1);
+// read contract sources for all contracts INCLUDING dependencies - which are all .sol files in the contracts directory including sub directories
+glob.sync(path.join(contractsDirectory, '/**/*.sol')).forEach((file) => {
+  if (file.match(/\.sol/)) {
+    contractSources[file] = fs.readFileSync(file).toString('utf8');
   }
+});
 
-  console.log(`compiled contracts: ${Object.keys(compiledContracts.contracts)}`);
-  let deployPromises = [];
-  contractsToDeploy.forEach((contractName) => {
-    console.log(`processing ${contractName}`);
+// use solc to complie the contracts
+console.log('compiling contracts. please wait...');
+let compiledContracts = solc.compile({sources: contractSources}, 1);
 
-    // hack because of no idea why. worked differently on a mac vs. linux machine
-    let compiled = compiledContracts.contracts[contractName];
-    if (!compiled) {
-      compiled = compiledContracts.contracts[contractsDirectory + '/' + contractName + '.sol:' + contractName];
-    }
+if (compiledContracts.errors) {
+  console.log('compilation failed with the following errors:');
+  compiledContracts.errors.forEach(error => console.log(error));
+  process.exit(1);
+}
 
-    if (!compiled) {
-      console.log(`${contractName} not found in compiled contracts. fatal.`);
-    }
-    let abi = JSON.parse(compiled.interface);
-    let bytecode = '0x' + compiled.bytecode;
-    contractsMetadata['bytecode'][contractName] = bytecode;
-    contractsMetadata['abi'][contractName] = abi;
-    let contractConfig = Config.contracts[contractName] || {};
-    let gasEstimate = defaultGas || contractConfig.gas || compiled.gasEstimates.creation[1] * 2.0; // * 2.0 - I have no idea
-    let contract = web3.eth.contract(abi);
+console.log(`compiled contracts: ${Object.keys(compiledContracts.contracts)}`);
+let deployPromises = [];
+contractsToDeploy.forEach((contractName) => {
+  // hack because of no idea why. worked differently on a mac vs. linux machine
+  let compiled = compiledContracts.contracts[contractName];
+  if (!compiled) {
+    compiled = compiledContracts.contracts[contractsDirectory + '/' + contractName + '.sol:' + contractName];
+  }
+  if (!compiled) { // still not found?
+    console.log(`${contractName} not found in compiled contracts. fatal.`);
+  }
+  let abi = JSON.parse(compiled.interface);
+  let bytecode = '0x' + compiled.bytecode;
+  contractsMetadata['bytecode'][contractName] = bytecode;
+  contractsMetadata['abi'][contractName] = abi;
+  let contractConfig = Config.contracts[contractName] || {};
+  let gasEstimate = defaultGas || contractConfig.gas || compiled.gasEstimates.creation[1] * 2.0; // * 2.0 - I have no idea why gas estimation does not work
+  let contract = web3.eth.contract(abi);
+
+  // if we want to deploy the contract from another, not connected wallet we only print the contract data that can be used in a manual transaction
+  // otherwise we deploy the contract through the connected node using the specified deployAccount
+  if (manualDeployment) {
+    let contractDeplyData = contract.new.getData(...(contractConfig.args || []), {data: bytecode});
+    console.log(`\nUse the following data to deploy ${contractName}:`);
+    console.log(contractDeplyData);
+  } else {
     console.log(`deploying contract ${contractName} with gas ${gasEstimate}`);
-    console.log("!! If you're using parity and did not unlock your account you have to enter the password in the UI. Go there!");
     deployPromises.push(new Promise((resolve, reject) => {
       contract.new(...(contractConfig.args || []), {from: deployAccount, data: bytecode, gas: gasEstimate}, function (err, deployedContract) {
         if (err) {
@@ -119,17 +120,20 @@ glob(path.join(contractsDirectory, '/**/*.sol'), (err, files) => {
         }
       });
     }));
-  });
+  }
+});
 
+// for non manual deployments we wait until the deploy transactions are mined and write the metadata (abi, address) to the lib directory
+if (!manualDeployment) {
   Promise.all(deployPromises).then(() => {
     let directory = program.directory || path.join(__dirname, '..', 'lib');
     ['abi', 'address', 'bytecode'].forEach((metadata) => {
       let fileContent = `module.exports = ${JSON.stringify(contractsMetadata[metadata])};`;
       fs.writeFileSync(path.join(directory, `${metadata}.js`), fileContent);
     });
-    console.log(`contracts metadata for ${network}  written to ${directory}`);
+    console.log(`contracts metadata for ${network} network written to ${directory}`);
   }).catch((err) => {
     console.log('error deploying contracts');
     console.log(err);
   });
-});
+}
