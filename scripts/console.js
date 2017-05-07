@@ -7,9 +7,9 @@ const program = require('commander');
 
 program
   .version('77')
-  .option('-n, --network <dev|test|main>', 'ethereum network')
-  .option('-p, --provider-url <url>', 'ethereum node provider url. defaults to localhost for dev and to parity.kosmos.org for test/main')
-  .option('-a, --account <account address>', 'account to use as creator. defaults to web3.eth.accounts[0]')
+  .option('-n, --network <dev|test|main>', 'Etherem network for which the contract will be deployed. default: dev')
+  .option('-p, --provider-url <url>', 'Ethereum RPC provider url. default: dev=localhost:8545 test/main=parity.kosmos.org')
+  .option('-a, --account <account address>', 'from account address. default: web3.eth.accounts[0]')
   .parse(process.argv);
 
 let network = program.network || 'dev';

@@ -13,14 +13,14 @@ const Config = require(path.join(__dirname, '..', 'config/contracts.js'));
 
 program
   .version('77')
-  .option('-n, --network <dev|test|main>', 'ethereum network')
-  .option('-p, --provider-url <url>', 'ethereum node provider url. defaults to localhost for dev and to parity.kosmos.org for test/main')
-  .option('-c, --contracts <Contract,Names>', 'comma sparated list of contracts to deploy. defaults to all kredits contracts')
-  .option('-a, --account <account address>', 'account to use as creator. defaults to web3.eth.accounts[0]')
-  .option('-o, --overwrite-metadata', 'overwrite existing contracts meta data')
-  .option('-g, --gas <amount>', 'set GAS amount to use for deploying contracts')
-  .option('-d, --directory <path/to/directory>', 'directory path where the contracts metadata should be written to')
-  .option('-m, --manual-deployment', 'print contract deployment data for manual deployment. Does not deploy the contract')
+  .option('-n, --network <dev|test|main>', 'Etherem network for which the contract will be deployed. default: dev')
+  .option('-p, --provider-url <url>', 'Ethereum RPC provider url. default: dev=localhost:8545 test/main=parity.kosmos.org')
+  .option('-c, --contracts <Contract,Names>', 'comma sparated list of contracts to deploy. default: all .sol files in the contracts directory')
+  .option('-a, --account <account address>', 'from account address. default: web3.eth.accounts[0]')
+  .option('-o, --overwrite-metadata', 'overwrite existing contracts meta data. if true writes new address/abi files and does not merge current data')
+  .option('-g, --gas <amount>', 'gas amount to use for deploying contracts')
+  .option('-d, --directory <path/to/directory>', 'direcoty path to which the metadata files are saved')
+  .option('-m, --manual-deployment', 'print contract deployment data for manual deployment. does not deploy the contract')
   .parse(process.argv);
 
 let network = program.network || 'dev';
