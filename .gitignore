@@ -4,3 +4,4 @@ npm-debug.log
 config/parity-dev-chain.json-e
 config/parity-dev-chain.json
 tmp/*
+lib/dev/*.js
