@@ -127,7 +127,10 @@ contractsToDeploy.forEach((contractName) => {
 // for non manual deployments we wait until the deploy transactions are mined and write the metadata (abi, address) to the lib directory
 if (!manualDeployment) {
   Promise.all(deployPromises).then(() => {
-    let directory = program.directory || path.join(__dirname, '..', 'tmp');
+    let directory = program.directory || path.join(__dirname, '..', 'lib/dev');
+    if (!fs.existsSync(directory)) {
+      fs.mkdirSync(directory);
+    }
     ['abi', 'address', 'bytecode'].forEach((metadata) => {
       let fileContent = `module.exports = ${JSON.stringify(contractsMetadata[metadata])};`;
       fs.writeFileSync(path.join(directory, `${metadata}.js`), fileContent);

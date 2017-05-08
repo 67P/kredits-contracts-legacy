@@ -12,8 +12,8 @@ program
   .option('-a, --account <account address>', 'from account address. default: web3.eth.accounts[0]')
   .parse(process.argv);
 
-const abi = require(path.join(__dirname, '..', 'tmp/abi.js'));
-const addresses = require(path.join(__dirname, '..', 'tmp/address.js'));
+const abi = require(path.join(__dirname, '..', 'lib/dev/abi.js'));
+const addresses = require(path.join(__dirname, '..', 'lib/dev/address.js'));
 
 let web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
 web3.eth.defaultAccount = program.account || web3.eth.accounts[0];
