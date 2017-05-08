@@ -6,6 +6,7 @@
   "main": "index.js",
   "bin": {
     "kredits-deploy": "scripts/deploy.js",
+    "kredits-seed": "scripts/seed.js",
     "kredits-console": "scripts/console.js",
     "kredits-inspect": "scripts/inspect.js",
     "kredits-parity": "scripts/parity.sh"
