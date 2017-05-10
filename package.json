@@ -14,11 +14,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "node scripts/deploy.js",
+    "deploy-local": "node scripts/deploy.js",
+    "deploy-testnet": "node scripts/deploy.js --network test",
+    "deploy-mainnet": "node scripts/deploy.js --network main",
     "parity": "scripts/parity.sh",
     "console": "node scripts/console.js",
     "inspect": "node scripts/inspect.js",
     "package": "scripts/package.sh",
-    "seed": "node scripts/seed.js"
+    "seed": "node scripts/seed.js",
+    "preversion": "npm run package && git add lib"
   },
   "author": "Michael Bumann",
   "license": "MIT",
