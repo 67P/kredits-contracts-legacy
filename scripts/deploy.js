@@ -96,9 +96,9 @@ contractsToDeploy.forEach((contractName) => {
   // if we want to deploy the contract from another, not connected wallet we only print the contract data that can be used in a manual transaction
   // otherwise we deploy the contract through the connected node using the specified deployAccount
   if (manualDeployment) {
-    let contractDeplyData = contract.new.getData(...(contractConfig.args || []), {data: bytecode});
-    console.log(`\nUse the following data to deploy ${contractName}:`);
-    console.log(contractDeplyData);
+    let contractDeployData = contract.new.getData(...(contractConfig.args || []), {data: bytecode});
+    console.log(`\nUse the following data string to deploy ${contractName}:`);
+    console.log(contractDeployData);
   } else {
     let deployAccount = program.account || web3.eth.accounts[0];
     console.log(`deploying contract ${contractName} with gas ${gasEstimate} and account ${deployAccount}`);
