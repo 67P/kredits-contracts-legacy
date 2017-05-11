@@ -36,14 +36,10 @@ let providerURL = program.providerUrl || networks[network];
 console.log(`connecting to ${providerURL}`);
 
 let web3 = new Web3(new Web3.providers.HttpProvider(providerURL));
-let deployAccount = program.account || web3.eth.accounts[0];
-console.log(`using account: ${deployAccount}`);
 
 // loading all sources of our contracts that we want to deploy
 // by default these are all .sol files in the ./contracts directory - but not sub directories (like dependencies)
-if (contractsToDeploy) {
-  contractsToDeploy = contractsToDeploy.split(',');
-} else {
+if (!contractsToDeploy) {
   contractsToDeploy = glob.sync(path.join(contractsDirectory, '*.sol')).map((file) => {
     return file.match(/.+\/(.+)\.sol/)[1];
   });
@@ -104,7 +100,8 @@ contractsToDeploy.forEach((contractName) => {
     console.log(`\nUse the following data to deploy ${contractName}:`);
     console.log(contractDeplyData);
   } else {
-    console.log(`deploying contract ${contractName} with gas ${gasEstimate}`);
+    let deployAccount = program.account || web3.eth.accounts[0];
+    console.log(`deploying contract ${contractName} with gas ${gasEstimate} and account ${deployAccount}`);
     deployPromises.push(new Promise((resolve, reject) => {
       contract.new(...(contractConfig.args || []), {from: deployAccount, data: bytecode, gas: gasEstimate}, function (err, deployedContract) {
         if (err) {
