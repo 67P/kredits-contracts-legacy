@@ -108,6 +108,11 @@ Deploy the contracts and write the contracts metadata (address/abi) to
 
     npm run deploy -- --directory=/path/to/my/app
 
+Deploy the contracts to a specified network (test) through a specified node/RPC provider:
+
+    npm run deploy -- --network=test --provider-url=http://localhost:8545
+
+
 ### Contracts REPL
 
 To quickly interact with the contracts, you can use the REPL provided by
