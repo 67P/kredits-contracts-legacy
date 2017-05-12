@@ -36,6 +36,7 @@ let providerURL = program.providerUrl || networks[network];
 console.log(`connecting to ${providerURL}`);
 
 let web3 = new Web3(new Web3.providers.HttpProvider(providerURL));
+let networkId = web3.version.network;
 
 // loading all sources of our contracts that we want to deploy
 // by default these are all .sol files in the ./contracts directory - but not sub directories (like dependencies)
@@ -48,7 +49,7 @@ if (!contractsToDeploy) {
 let contractSources = {};
 // load existing contract metadata (abi/address)
 // helpful when only deploying specific contracts to not loose existing metadata
-let contractsMetadata = {'abi': {}, 'bytecode': {}, 'address': {}};
+let contractsMetadata = {abi: {}, bytecode: {}, address: {}};
 if (!overwriteMetadata) {
   Object.keys(contractsMetadata).forEach((m) => {
     try {
@@ -128,10 +129,17 @@ if (!manualDeployment) {
     if (!fs.existsSync(directory)) {
       fs.mkdirSync(directory);
     }
+    // writing ABI and address metadate for the deployed network
     ['abi', 'address', 'bytecode'].forEach((metadata) => {
-      let fileContent = `module.exports = ${JSON.stringify(contractsMetadata[metadata])};`;
+      let metadataObject = {};
+      Object.keys(contractsMetadata[metadata]).forEach((contractName) => {
+        metadataObject[contractName] = {};
+        metadataObject[contractName][networkId] = contractsMetadata[metadata][contractName];
+      });
+      let fileContent = `module.exports = ${JSON.stringify(metadataObject)};`;
       fs.writeFileSync(path.join(directory, `${metadata}.js`), fileContent);
     });
+
     console.log(`contracts metadata for ${network} network written to ${directory}`);
   }).catch((err) => {
     console.log('error deploying contracts');

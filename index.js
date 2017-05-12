@@ -2,11 +2,13 @@ const abi = require('./lib/abi.js');
 const addresses = require('./lib/address.js');
 
 module.exports = function (web3, opts = {}) {
+  let networkId = opts["networkId"] || web3.version.network;
   let contracts = {};
-  Object.keys(abi).forEach(function (contractName) {
+
+  Object.keys(addresses).forEach(function (contractName) {
     let config = {
-      address: addresses[contractName],
-      abi: abi[contractName]
+      address: addresses[contractName][networkId],
+      abi: abi[contractName][networkId]
     };
 
     let contractOpts = opts[contractName];
@@ -15,6 +17,8 @@ module.exports = function (web3, opts = {}) {
         config[m] = contractOpts[m];
       }
     });
+    if(!config.abi) { throw 'ABI not found for contract: ' + contractName; }
+    if(!config.address) { throw 'address not found for contract: ' + contractName;}
 
     contracts[contractName] = web3.eth.contract(config.abi).at(config.address);
   });
