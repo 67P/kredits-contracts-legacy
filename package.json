@@ -1,6 +1,6 @@
 {
   "name": "kredits-contracts",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Ethereum smart contracts for Kosmos Kredits",
   "repository": "https://github.com/67P/kredits-contracts",
   "main": "index.js",
@@ -21,8 +21,7 @@
     "console": "node scripts/console.js",
     "inspect": "node scripts/inspect.js",
     "package": "scripts/package.sh",
-    "seed": "node scripts/seed.js",
-    "preversion": "npm run package && git add lib"
+    "seed": "node scripts/seed.js"
   },
   "author": "Michael Bumann",
   "license": "MIT",
