@@ -12,17 +12,19 @@ program
   .option('-a, --account <account address>', 'from account address. default: web3.eth.accounts[0]')
   .parse(process.argv);
 
+let web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+
 const abi = require(path.join(__dirname, '..', 'lib/dev/abi.js'));
 const addresses = require(path.join(__dirname, '..', 'lib/dev/address.js'));
 
-let web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+let networkId = web3.version.network;
 web3.eth.defaultAccount = program.account || web3.eth.accounts[0];
 
 let seeds = require(path.join(__dirname, '..', '/config/seeds.js'));
 
 let contracts = {};
 Object.keys(abi).forEach((contractName) => {
-  contracts[contractName] = web3.eth.contract(abi[contractName]).at(addresses[contractName]);
+  contracts[contractName] = web3.eth.contract(abi[contractName][networkId]).at(addresses[contractName][networkId]);
 });
 
 let executors = [];

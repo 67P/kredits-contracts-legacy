@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const fs = require('fs');
 const Web3 = require('web3');
 const repl = require('repl');
 const util = require('util');
@@ -30,10 +31,23 @@ global.web3 = new Web3(new Web3.providers.HttpProvider(providerURL));
 
 let account = program.account || global.web3.eth.accounts[0];
 
-global.contracts = require('../index.js')(global.web3);
+let networkId = web3.version.network;
+console.log(`using network: ${networkId}`);
+let abi, addresses;
+if (fs.existsSync(path.join(__dirname, '..', `lib/dev/address.js`))) {
+  console.log('found dev address/abi');
+  abi = require(path.join(__dirname, '..', 'lib/dev/abi.js'));
+  addresses = require(path.join(__dirname, '..', 'lib/dev/address.js'));
+} else {
+  abi = require(path.join(__dirname, '..', 'lib/abi.js'));
+  addresses = require(path.join(__dirname, '..', 'lib/address.js'));
+}
 
-Object.keys(global.contracts).forEach((contractName) => {
-  global[contractName] = global.contracts[contractName];
+global.contracts = {};
+console.log(addresses);
+Object.keys(addresses).forEach(function (contractName) {
+  contracts[contractName] = web3.eth.contract(abi[contractName][networkId]).at(addresses[contractName][networkId]);
+  global[contractName] = contracts[contractName];
   global[contractName].allEvents({fromBlock: 'latest'}).watch((err, e) => {
     if (err) {
       console.log('event error:');
