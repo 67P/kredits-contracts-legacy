@@ -130,7 +130,7 @@ if (!manualDeployment) {
       fs.mkdirSync(directory);
     }
     // writing ABI and address metadate for the deployed network
-    ['abi', 'address', 'bytecode'].forEach((metadata) => {
+    ['abi', 'address'].forEach((metadata) => {
       let metadataObject = {};
       Object.keys(contractsMetadata[metadata]).forEach((contractName) => {
         metadataObject[contractName] = {};
