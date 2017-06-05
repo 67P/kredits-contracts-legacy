@@ -113,6 +113,11 @@ contract Kredits {
     ProposalVoted(_pId, msg.sender);
   }
 
+  function hasVotedFor(address _sender, uint256 _proposalId) public constant returns (bool) {
+    Proposal p = proposals[_proposalId];
+    return p.exists && p.votes[_sender];
+  }
+
   function executeProposal(uint proposalId) private returns (bool) {
     var p = proposals[proposalId];
     if(p.executed) { throw; }
