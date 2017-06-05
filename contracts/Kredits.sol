@@ -36,6 +36,7 @@ contract Kredits {
   event ContributorAdded(address account, string id, string name, string ipfsHash, bool isCore);
   event ProposalCreated(uint256 id, address creator, address recipient, uint256 amount, string url, string ipfsHash);
   event ProposalVoted(uint256 id, address voter);
+  event ProposalVoted(uint256 id, address voter, uint256 totalVotes);
   event ProposalExecuted(uint256 id, address recipient, uint256 amount, string url, string ipfsHash);
 
   modifier coreOnly() { if (!contributors[msg.sender].isCore) { throw; } _; }
@@ -111,6 +112,7 @@ contract Kredits {
       _executed = true;
     }
     ProposalVoted(_pId, msg.sender);
+    ProposalVoted(_pId, msg.sender, p.votesCount);
   }
 
   function executeProposal(uint proposalId) private returns (bool) {
