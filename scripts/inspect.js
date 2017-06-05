@@ -36,7 +36,7 @@ let contractNames = program.contracts || Object.keys(Metadata);
 
 contractNames.forEach((c) => {
   let output;
-  if (typeof Metadata[c] === 'string') {
+  if (typeof Metadata[c][networkId] === 'string') {
     output = Metadata[c][networkId];
   } else {
     output = JSON.stringify(Metadata[c][networkId]);

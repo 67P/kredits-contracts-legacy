@@ -24,6 +24,7 @@ let seeds = require(path.join(__dirname, '..', '/config/seeds.js'));
 
 let contracts = {};
 Object.keys(abi).forEach((contractName) => {
+  console.log(`Using ${contractName} at ${addresses[contractName][networkId]}`);
   contracts[contractName] = web3.eth.contract(abi[contractName][networkId]).at(addresses[contractName][networkId]);
 });
 
