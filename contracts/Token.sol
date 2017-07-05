@@ -2,10 +2,11 @@ pragma solidity ^0.4.1;
 
 import './dependencies/SafeMath.sol';
 import './dependencies/Ownable.sol';
+import './dependencies/Operatable.sol';
 import './dependencies/ERC20.sol';
 import './Kredits.sol';
 
-contract Token is ERC20, SafeMath, Ownable {
+contract Token is ERC20, SafeMath, Ownable, Operatable{
   uint public totalSupply;
   string public name;
   string public symbol;
