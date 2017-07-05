@@ -20,13 +20,13 @@ const addresses = require(path.join(__dirname, '..', 'lib/dev/address.js'));
 let networkId = web3.version.network;
 web3.eth.defaultAccount = program.account || web3.eth.accounts[0];
 
-let seeds = require(path.join(__dirname, '..', '/config/seeds.js'));
-
 let contracts = {};
 Object.keys(abi).forEach((contractName) => {
   console.log(`Using ${contractName} at ${addresses[contractName][networkId]}`);
   contracts[contractName] = web3.eth.contract(abi[contractName][networkId]).at(addresses[contractName][networkId]);
 });
+
+let seeds = require(path.join(__dirname, '..', '/config/seeds.js'))(contracts);
 
 let executors = [];
 Object.keys(seeds).forEach(contract => {
