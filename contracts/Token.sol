@@ -1,4 +1,4 @@
-pragma solidity ^0.4.1;
+pragma solidity ^0.4.11;
 
 import './dependencies/SafeMath.sol';
 import './dependencies/Ownable.sol';
@@ -21,7 +21,7 @@ contract Token is ERC20, SafeMath, Ownable, Operatable {
   event Locked(string reason);
   event Forked(address indexed self, address indexed child);
   event Migrated(address indexed account);
-  event Minted(address indexed recipient, uint256 amount, string reference);
+  event Minted(address indexed recipient, uint256 amount, uint indexed contributorId, string reference);
 
   mapping(address => uint) balances;
   mapping (address => mapping (address => uint)) allowed;
@@ -60,6 +60,12 @@ contract Token is ERC20, SafeMath, Ownable, Operatable {
     return true;
   }
 
+  function migrateBalance(address _from, address _to) onlyOperator {
+    balances[_to] = safeAdd(balances[_to], balances[_from]);
+    balances[_from] = 0;
+    Transfer(_from, _to, balances[_to]);
+  }
+
   function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
     //same as above. Replace this line with the following if you want to protect against wrapping uints.
     //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
@@ -89,10 +95,6 @@ contract Token is ERC20, SafeMath, Ownable, Operatable {
     if (migratedToChild[msg.sender] == true || balances[msg.sender] == 0) {
       throw;
     }
-    migratedToChild[msg.sender] = true;
-    childToken.mintFor(msg.sender, balances[msg.sender], 'migration');
-    balances[msg.sender] = 0;
-    Migrated(msg.sender);
   }
   
   function approve(address _spender, uint _value) returns (bool success) {
@@ -105,13 +107,13 @@ contract Token is ERC20, SafeMath, Ownable, Operatable {
     return allowed[_owner][_spender];
   }
 
-  function mintFor(address _recipient, uint256 _amount, string _reference) returns (bool success) {
+  function mintFor(address _recipient, uint256 _amount, uint _contributorId, string _contributionHash) returns (bool success) {
     if (msg.sender != owner && msg.sender != address(operator)) {
       throw;
     } else {
       totalSupply = safeAdd(totalSupply, _amount);
       balances[_recipient] = safeAdd(balances[_recipient], _amount);
-      Minted(_recipient, _amount, _reference);
+      Minted(_recipient, _amount, _contributorId, _contributionHash);
       return true;
     }
   }

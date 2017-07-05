@@ -1,65 +1,96 @@
 pragma solidity ^0.4.11;
 
 import './dependencies/Ownable.sol';
+import './dependencies/Operatable.sol';
 
-contract Contributors is Ownable {
+contract Contributors is Ownable, Operatable {
 
   struct Contributor {
     string id;
-    string name;
-    string ipfsHash;
+    address account;
+    string profileHash;
     bool exists;
     bool isCore;
-    uint addedAt;
   }
 
-  mapping (address => Contributor) public contributors;
-  mapping (uint => address) public ContributorIds;
+  mapping (address => uint) public contributorIds;
+  mapping (uint => Contributor) public contributors;
   uint public contributorsCount;
 
-  address public operator;
+  event ContributorProfileUpdated(uint id, string oldProfileHash, string newProfileHash);
+  event ContributorAddressUpdated(uint id, address oldAddress, address newAddress);
+  event ContributorAdded(uint id, address _address, string profileHash);
 
-  event ContributorUpdated(address _address, string id, string name, string ipfsHash);
-  event ContributorAdded(address _address, string id, string name, string ipfsHash);
-
-  modifier onlyOperator() { if (msg.sender != operator) { throw; } _; }
-
-  function setOperatorContract(address _address) onlyOperator {
-    operator = _address;
+  function Contributors(string _profileHash) {
+    addContributor(msg.sender, _profileHash, true);
   }
 
-  function updateContributor(address _address, string _name, string _ipfsHash, bool isCore, string _id) onlyOperator {
-    if(contributors[_address].exists != true) {
-      throw;
-    } else {
-      Contributor c = contributors[_address];
-      c.isCore = isCore;
-      c.name = _name;
-      c.ipfsHash = _ipfsHash;
-      c.id = _id;
-      ContributorUpdated(_address, c.id, c.name, c.ipfsHash);
+  function coreContributorsCount() constant returns (uint) {
+    uint count = 0;
+    for (var i = 0; i < contributorsCount; i++) {
+      if(contributors[i].isCore) {
+        count += 1;
+      }
     }
+    return count;
   }
 
-  function addContributor(address _address, string _name, string _ipfsHash, bool isCore, string _id) onlyOperator {
-    if(contributors[_address].exists != true) {
-      Contributor c = contributors[_address];
+  function updateContributorAddress(uint _id, address _oldAddress, address _newAddress) onlyOperator {
+    delete contributorIds[_oldAddress];
+    contributorIds[_newAddress] = _id;
+    contributors[_id].account = _newAddress;
+    ContributorAddressUpdated(_id, _oldAddress, _newAddress);
+  }
+
+  function updateContributorProfileHash(uint _id, string _profileHash) onlyOperator {
+    Contributor c = contributors[_id];
+    string _oldProfileHash = c.profileHash;
+    c.profileHash = _profileHash;
+
+    ContributorProfileUpdated(_id, _oldProfileHash, c.profileHash); 
+  }
+
+  function addContributor(address _address, string _profileHash, bool isCore) onlyOperator {
+    uint _id = contributorsCount + 1;
+    if(contributors[_id].exists != true) {
+      Contributor c = contributors[_id];
       c.exists = true;
       c.isCore = isCore;
-      c.name = _name;
-      c.ipfsHash = _ipfsHash;
-      c.id = _id;
+      c.profileHash = _profileHash;
+      c.account = _address;
+      contributorIds[_address] = _id;
+    
       contributorsCount += 1;
-      ContributorIds[contributorsCount] = _address;
-      ContributorAdded(_address, c.id, c.name, c.ipfsHash);
+      ContributorAdded(_id, _address, _profileHash);
     }
   }
 
-  function isCore(address _address) constant returns (bool) {
-    return contributors[_address].isCore;
+  function isCore(uint _id) constant returns (bool) {
+    return contributors[_id].isCore;
   }
 
-  function exists(address _address) constant returns (bool) {
-    return contributors[_address].exists;
+  function exists(uint _id) constant returns (bool) {
+    return contributors[_id].exists;
+  }
+
+  function addressIsCore(address _address) constant returns (bool) {
+    return getContributorByAddress(_address).isCore;
+  }
+
+  function addressExists(address _address) constant returns (bool) {
+    return getContributorByAddress(_address).exists;
+  }
+
+  function getContributorIdByAddress(address _address) constant returns (uint) {
+    return contributorIds[_address];
+  }
+
+  function getContributorAddressById(uint _id) constant returns (address) {
+    return contributors[_id].account;
+  }
+  
+  function getContributorByAddress(address _address) internal returns (Contributor) {
+    uint id = contributorIds[_address];
+    return contributors[id];
   }
 }
