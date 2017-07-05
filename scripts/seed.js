@@ -26,8 +26,9 @@ Object.keys(abi).forEach((contractName) => {
   contracts[contractName] = web3.eth.contract(abi[contractName][networkId]).at(addresses[contractName][networkId]);
 });
 
-let seeds = require(path.join(__dirname, '..', '/config/seeds.js'))(contracts);
-
+let seedGenerator = require(path.join(__dirname, '..', '/config/seeds.js'));
+let seeds = seedGenerator(contracts);
+console.log(seeds);
 let executors = [];
 Object.keys(seeds).forEach(contract => {
   Object.keys(seeds[contract]).forEach(method => {

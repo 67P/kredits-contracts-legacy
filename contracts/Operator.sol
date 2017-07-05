@@ -1,9 +1,10 @@
 pragma solidity ^0.4.11;
 
+import './dependencies/Ownable.sol';
 import './Token.sol';
 import './Contributors.sol';
 
-contract Operator {
+contract Operator is Ownable {
   struct Proposal {
     address creator;
     uint recipientId;
@@ -21,8 +22,6 @@ contract Operator {
 
   Proposal[] public proposals;
 
-  string public ipfsHash;
-
   event ProposalCreated(uint256 id, address creator, uint recipient, uint256 amount, string ipfsHash);
   event ProposalVoted(uint256 id, address voter);
   event ProposalVoted(uint256 id, address voter, uint256 totalVotes);
@@ -32,15 +31,18 @@ contract Operator {
   modifier contributorOnly() { if(contributors.addressExists(msg.sender)) { _; } else { throw; } }
   modifier noEther() { if (msg.value > 0) throw; _; }
 
-  function Kredits(string _ipfsHash) {
-    ipfsHash = _ipfsHash;
+  function Kredits(address _contributorsAddress) {
+    contributors = Contributors(_contributorsAddress);
   }
 
   function setTokenContract(address _address) coreOnly {
     kredits = Token(_address);
   }
 
-  function setContributorsContract(address _address) coreOnly {
+  function setContributorsContract(address _address) {
+    if (msg.sender != owner || !contributors.addressIsCore(msg.sender)) {
+      throw;
+    }
     contributors = Contributors(_address);
   }
 
