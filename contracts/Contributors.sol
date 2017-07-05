@@ -2,7 +2,7 @@ pragma solidity ^0.4.11;
 
 import './dependencies/Ownable.sol';
 
-contract KreditsContributors is Ownable {
+contract Contributors is Ownable {
 
   struct Contributor {
     string id;
@@ -17,19 +17,19 @@ contract KreditsContributors is Ownable {
   mapping (uint => address) public ContributorIds;
   uint public contributorsCount;
 
-  address public kreditsOperator;
+  address public operator;
 
   event ContributorUpdated(address _address, string id, string name, string ipfsHash);
   event ContributorAdded(address _address, string id, string name, string ipfsHash);
 
-  modifier onlyKreditsOperator() { if (msg.sender != kreditsOperator) { throw; } _; }
+  modifier onlyOperator() { if (msg.sender != operator) { throw; } _; }
 
-  function setOperatorContract(address _address) onlyKreditsOperator {
-    kreditsOperator = _address;
+  function setOperatorContract(address _address) onlyOperator {
+    operator = _address;
   }
 
-  function updateContributor(address _address, string _name, string _ipfsHash, bool isCore, string _id) onlyKreditsOperator {
-    if(contributors[_address].exists != true) { 
+  function updateContributor(address _address, string _name, string _ipfsHash, bool isCore, string _id) onlyOperator {
+    if(contributors[_address].exists != true) {
       throw;
     } else {
       Contributor c = contributors[_address];
@@ -41,7 +41,7 @@ contract KreditsContributors is Ownable {
     }
   }
 
-  function addContributor(address _address, string _name, string _ipfsHash, bool isCore, string _id) onlyKreditsOperator {
+  function addContributor(address _address, string _name, string _ipfsHash, bool isCore, string _id) onlyOperator {
     if(contributors[_address].exists != true) {
       Contributor c = contributors[_address];
       c.exists = true;
@@ -52,7 +52,7 @@ contract KreditsContributors is Ownable {
       contributorsCount += 1;
       ContributorIds[contributorsCount] = _address;
       ContributorAdded(_address, c.id, c.name, c.ipfsHash);
-    } 
+    }
   }
 
   function isCore(address _address) constant returns (bool) {

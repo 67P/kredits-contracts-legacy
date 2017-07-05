@@ -1,9 +1,9 @@
 pragma solidity ^0.4.1;
 
 import './Token.sol';
-import './KreditsContributors.sol';
+import './Contributors.sol';
 
-contract Kredits {
+contract Operator {
   struct Proposal {
     address creator;
     address recipient;
@@ -18,7 +18,7 @@ contract Kredits {
   }
 
   Token kredits;
-  KreditsContributors contributors;
+  Contributors contributors;
 
   Proposal[] public proposals;
   uint votesNeeded;
@@ -46,7 +46,7 @@ contract Kredits {
   }
 
   function setContributorsContract(address _address) {
-    contributors = KreditsContributors(_address);
+    contributors = Contributors(_address);
   }
 
   function updateOperatorContract(address _newOperatorAddress) {

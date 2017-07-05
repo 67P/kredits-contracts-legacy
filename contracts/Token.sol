@@ -4,21 +4,20 @@ import './dependencies/SafeMath.sol';
 import './dependencies/Ownable.sol';
 import './dependencies/Operatable.sol';
 import './dependencies/ERC20.sol';
-import './Kredits.sol';
 
-contract Token is ERC20, SafeMath, Ownable, Operatable{
+contract Token is ERC20, SafeMath, Ownable, Operatable {
+
   uint public totalSupply;
   string public name;
   string public symbol;
-  uint8 public decimals; 
+  uint8 public decimals;
 
   Token public parentToken;
   Token public childToken;
 
-  Kredits public kredits;
   uint public creationBlock;
   bool public locked;
- 
+
   event Locked(string reason);
   event Forked(address indexed self, address indexed child);
   event Migrated(address indexed account);
@@ -36,14 +35,10 @@ contract Token is ERC20, SafeMath, Ownable, Operatable{
     if (childToken == address(0)) { throw; }
     _;
   }
-  modifier onlyKredits() {
-    if (msg.sender != address(kredits)) { throw; }
-    _;
-  }
 
   function Token(address _parentToken) {
     parentToken = Token(_parentToken);
-    name = "Kredits"; 
+    name = "Kredits";
     symbol = "₭S";
     decimals = 0;
     totalSupply = 0;
@@ -55,7 +50,7 @@ contract Token is ERC20, SafeMath, Ownable, Operatable{
     if (balances[msg.sender] < _value) {
       throw;
     }
-    if (_value == 0) { 
+    if (_value == 0) {
       return true;
     }
 
@@ -65,7 +60,6 @@ contract Token is ERC20, SafeMath, Ownable, Operatable{
     return true;
   }
 
-  
   function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
     //same as above. Replace this line with the following if you want to protect against wrapping uints.
     //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
@@ -112,7 +106,7 @@ contract Token is ERC20, SafeMath, Ownable, Operatable{
   }
 
   function mintFor(address _recipient, uint256 _amount, string _reference) returns (bool success) {
-    if (msg.sender != owner && msg.sender != address(kredits)) {
+    if (msg.sender != owner && msg.sender != address(operator)) {
       throw;
     } else {
       totalSupply = safeAdd(totalSupply, _amount);
@@ -122,10 +116,6 @@ contract Token is ERC20, SafeMath, Ownable, Operatable{
     }
   }
 
-  function setKredits(address _kredits) onlyOwner {
-    kredits = Kredits(_kredits);
-  }
-  
   function fork(address _newAddress) onlyOwner {
     childToken = Token(_newAddress);
     lock('forked');
@@ -137,7 +127,7 @@ contract Token is ERC20, SafeMath, Ownable, Operatable{
     Locked(_reason);
     return locked;
   }
-  
+
   function unlock() onlyOwner returns (bool) {
     locked = false;
     return locked;
