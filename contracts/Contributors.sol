@@ -6,7 +6,6 @@ import './dependencies/Operatable.sol';
 contract Contributors is Ownable, Operatable {
 
   struct Contributor {
-    string id;
     address account;
     string profileHash;
     bool exists;
@@ -59,7 +58,7 @@ contract Contributors is Ownable, Operatable {
       c.profileHash = _profileHash;
       c.account = _address;
       contributorIds[_address] = _id;
-    
+
       contributorsCount += 1;
       ContributorAdded(_id, _address, _profileHash);
     }

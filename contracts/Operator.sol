@@ -40,9 +40,7 @@ contract Operator is Ownable {
   }
 
   function setContributorsContract(address _address) {
-    if (msg.sender != owner || !contributors.addressIsCore(msg.sender)) {
-      throw;
-    }
+    if (msg.sender != owner) { throw; }
     contributors = Contributors(_address);
   }
 
@@ -58,7 +56,7 @@ contract Operator is Ownable {
   function addContributor(address _address, string _profileHash, bool isCore) coreOnly {
     contributors.addContributor(_address, _profileHash, isCore);
   }
-  
+
   function updateContributorProfileHash(uint _id, string _profileHash) coreOnly {
     contributors.updateContributorProfileHash(_id, _profileHash);
   }
@@ -67,7 +65,7 @@ contract Operator is Ownable {
     contributors.updateContributorAddress(_id, _oldAddress, _newAddress);
     kredits.migrateBalance(_oldAddress, _newAddress);
   }
-  
+
   function proposalsCount() constant returns (uint) {
     return proposals.length;
   }

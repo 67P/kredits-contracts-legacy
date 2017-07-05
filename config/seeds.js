@@ -3,20 +3,20 @@ let seeds = function(contracts) {
   return {
     Contributors: {
       setOperatorContract: [
-        contracts['Contributors'].address
+        [ contracts['Contributors'].address ]
       ]
     },
     Token: {
       setOperatorContract: [
-        contracts['Contributors'].address
+        [ contracts['Contributors'].address ]
       ]
     },
     Operator: {
       setContributorsContract: [
-        contracts['Contributors'].address
+        [ contracts['Contributors'].address ]
       ],
       setTokenContract: [
-        contracts['Token'].address
+        [ contracts['Token'].address ]
       ],
       addContributor: [
         ['0xF18E631Ea191aE4ebE70046Fcb01a43655441C6d', 'QmQ2ZZS2bXgneQfKtVTVxe6dV7pcJuXnTeZJQtoVUFsAtJ', true], // basti
