@@ -3,12 +3,12 @@ let seeds = function(contracts) {
   return {
     Contributors: {
       setOperatorContract: [
-        [ contracts['Contributors'].address ]
+        [ contracts['Operator'].address ]
       ]
     },
     Token: {
       setOperatorContract: [
-        [ contracts['Contributors'].address ]
+        [ contracts['Operator'].address ]
       ]
     },
     Operator: {
