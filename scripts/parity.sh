@@ -42,6 +42,8 @@ set -x
 exec $whichParity --chain=$CONFIGPATH \
                   --force-ui \
                   --reseal-min-period 0 \
+                  --jsonrpc-cors="*" \
+                  --geth \
                   --unlock=$account \
                   --password=$CONFIGDIR/parity-dev-password \
                   $@
