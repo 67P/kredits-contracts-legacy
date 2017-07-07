@@ -93,7 +93,7 @@ contract Contributors is Ownable, Operatable {
   function getContributorAddressById(uint _id) constant returns (address) {
     return contributors[_id].account;
   }
-  
+
   function getContributorByAddress(address _address) internal returns (Contributor) {
     uint id = contributorIds[_address];
     return contributors[id];

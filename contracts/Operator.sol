@@ -89,21 +89,21 @@ contract Operator is Ownable {
 
     proposalId = proposals.length;
     uint _votesNeeded = contributors.coreContributorsCount() / 100 * 75;
-   
+
     var p = Proposal({
-      creator: msg.sender, 
-      recipientId: _recipient, 
-      amount: _amount, 
-      ipfsHash: _ipfsHash, 
-      votesCount: 0, 
-      votesNeeded: _votesNeeded, 
-      executed: false, 
+      creator: msg.sender,
+      recipientId: _recipient,
+      amount: _amount,
+      ipfsHash: _ipfsHash,
+      votesCount: 0,
+      votesNeeded: _votesNeeded,
+      executed: false,
       exists: true
     });
     proposals.push(p);
     ProposalCreated(proposalId, msg.sender, p.recipientId, p.amount, p.ipfsHash);
   }
-  
+
   function vote(uint256 _proposalId) public coreOnly returns (uint _pId, bool _executed) {
     var p = proposals[_proposalId];
     if(p.executed) { throw; }
