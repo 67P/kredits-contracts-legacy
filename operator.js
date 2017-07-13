@@ -17,18 +17,22 @@ module.exports = function(web3, contractOpts = {}) {
       this.config[m] = contractOpts[m];
     }
   });
-  if(!this.config.abi) { throw 'ABI not found for contract: ' + this.contractName; }
-  if(!this.config.address) { throw 'address not found for contract: ' + this.contractName;}
+  if (!this.config.abi) { throw 'ABI not found for contract: ' + this.contractName; }
+  if (!this.config.address) { throw 'address not found for contract: ' + this.contractName;}
 
   this.contract = web3.eth.contract(this.config.abi).at(this.config.address);
 
   this.getValueFromContract = function(contractMethod, ...args) {
     return new Promise((resolve, reject) => {
       this.contract[contractMethod](...args, (err, data) => {
-        if (err) { reject(err); }
+        if (err) { reject(err); return; }
         resolve(data);
       });
     });
+  };
+
+  this.contributorsCount = function() {
+    return this.getValueFromContract('contributorsCount');
   };
 
   this.addContributor = function(address, profileHashBase58, isCore) {
@@ -44,16 +48,19 @@ module.exports = function(web3, contractOpts = {}) {
   };
 
   this.getContributor = function(id) {
-    return this.getValueFromContract('contributors', id).then(res => {
-      const profileHashHex = '1220' + res[1].replace('0x','');
-      const profileHashBase58 = base58.encode(new Buffer(profileHashHex, 'hex'));
-      const contributor = {
-        id: id,
-        address: res[0],
-        profileHash: profileHashBase58,
-        isCore: res[2]
-      };
-      return contributor;
+    return new Promise((resolve, reject) => {
+      this.contract.getContributor(id, (err, res) => {
+        if (err) { reject(err); return; }
+        const profileHashHex = '1220' + res[1].replace('0x','');
+        const profileHashBase58 = base58.encode(new Buffer(profileHashHex, 'hex'));
+        const contributor = {
+          id: id,
+          address: res[0],
+          profileHash: profileHashBase58,
+          isCore: res[2]
+        };
+        resolve(contributor);
+      });
     });
   };
 
