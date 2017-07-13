@@ -5,12 +5,14 @@ import './Token.sol';
 import './Contributors.sol';
 
 contract Operator is Ownable {
+
   struct Contributor {
     address account;
     string profileHash;
     bool exists;
     bool isCore;
   }
+
   struct Proposal {
     address creator;
     uint recipientId;
@@ -71,20 +73,21 @@ contract Operator is Ownable {
     contributors.updateContributorAddress(_id, _oldAddress, _newAddress);
     kredits.migrateBalance(_oldAddress, _newAddress);
   }
-  
+
   function getContributor(uint _id) constant returns (address account, bytes32 profileHash, bool isCore) {
     uint8 hashFunction;
     uint8 hashSize;
     bool exists;
     (account, profileHash, hashFunction, hashSize,  isCore, exists) = contributors.contributors(_id);
+    if (!exists) { throw; }
   }
-  
+
   function proposalsCount() constant returns (uint) {
     return proposals.length;
   }
 
   function addProposal(uint _recipient, uint256 _amount, string _ipfsHash) public returns (uint256 proposalId) {
-    if(!contributors.exists(_recipient)) { throw; }
+    if (!contributors.exists(_recipient)) { throw; }
 
     proposalId = proposals.length;
     uint _votesNeeded = contributors.coreContributorsCount() / 100 * 75;
@@ -105,13 +108,13 @@ contract Operator is Ownable {
 
   function vote(uint256 _proposalId) public coreOnly returns (uint _pId, bool _executed) {
     var p = proposals[_proposalId];
-    if(p.executed) { throw; }
-    if(p.votes[msg.sender] == true) { throw; }
+    if (p.executed) { throw; }
+    if (p.votes[msg.sender] == true) { throw; }
     p.votes[msg.sender] = true;
     p.votesCount++;
     _executed = false;
     _pId = _proposalId;
-    if(p.votesCount >= p.votesNeeded) {
+    if (p.votesCount >= p.votesNeeded) {
       executeProposal(_proposalId);
       _executed = true;
     }
@@ -125,12 +128,12 @@ contract Operator is Ownable {
 
   function executeProposal(uint proposalId) private returns (bool) {
     var p = proposals[proposalId];
-    if(p.executed) { throw; }
-    if(p.votesCount < p.votesNeeded) { throw; }
+    if (p.executed) { throw; }
+    if (p.votesCount < p.votesNeeded) { throw; }
     address recipientAddress = contributors.getContributorAddressById(p.recipientId);
     kredits.mintFor(recipientAddress, p.amount, p.recipientId, p.ipfsHash);
     p.executed = true;
-    ProposalExecuted(proposalId, p.recipientId, p.amount, p.ipfsHash);    
+    ProposalExecuted(proposalId, p.recipientId, p.amount, p.ipfsHash);
     return true;
   }
 

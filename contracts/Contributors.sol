@@ -29,7 +29,7 @@ contract Contributors is Ownable, Operatable {
   function coreContributorsCount() constant returns (uint) {
     uint count = 0;
     for (var i = 0; i < contributorsCount; i++) {
-      if(contributors[i].isCore) {
+      if (contributors[i].isCore) {
         count += 1;
       }
     }
@@ -50,12 +50,12 @@ contract Contributors is Ownable, Operatable {
     c.hashFunction = 0x12;
     c.hashSize = 0x20;
 
-    ContributorProfileUpdated(_id, _oldProfileHash, c.profileHash); 
+    ContributorProfileUpdated(_id, _oldProfileHash, c.profileHash);
   }
 
   function addContributor(address _address, bytes32 _profileHash, bool isCore) onlyOperator {
     uint _id = contributorsCount + 1;
-    if(contributors[_id].exists != true) {
+    if (contributors[_id].exists != true) {
       Contributor c = contributors[_id];
       c.exists = true;
       c.isCore = isCore;
