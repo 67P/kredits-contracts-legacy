@@ -73,11 +73,10 @@ contract Operator is Ownable {
   }
   
   function getContributor(uint _id) constant returns (address account, bytes32 profileHash, bool isCore) {
-    uint8 profileHashFunction;
-    uint8 profileHashSize;
+    uint8 hashFunction;
+    uint8 hashSize;
     bool exists;
-    (account, profileHash, profileHashFunction, profileHashSize,  isCore, exists) = contributors.contributors(_id);
-    if(!exists) { throw; }
+    (account, profileHash, hashFunction, hashSize,  isCore, exists) = contributors.contributors(_id);
   }
   
   function proposalsCount() constant returns (uint) {

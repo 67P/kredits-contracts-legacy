@@ -8,8 +8,8 @@ contract Contributors is Ownable, Operatable {
   struct Contributor {
     address account;
     bytes32 profileHash;
-    uint8 profileHashFunction;
-    uint8 profileHashSize;
+    uint8 hashFunction;
+    uint8 hashSize;
     bool isCore;
     bool exists;
   }
@@ -47,8 +47,8 @@ contract Contributors is Ownable, Operatable {
     Contributor c = contributors[_id];
     bytes32 _oldProfileHash = c.profileHash;
     c.profileHash = _profileHash;
-    c.profileHashFunction = 0x12;
-    c.profileHashSize = 0x20;
+    c.hashFunction = 0x12;
+    c.hashSize = 0x20;
 
     ContributorProfileUpdated(_id, _oldProfileHash, c.profileHash); 
   }
@@ -60,8 +60,8 @@ contract Contributors is Ownable, Operatable {
       c.exists = true;
       c.isCore = isCore;
       c.profileHash = _profileHash;
-      c.profileHashSize = 0x20;
-      c.profileHashFunction = 0x12;
+      c.hashSize = 0x20;
+      c.hashFunction = 0x12;
       c.account = _address;
       contributorIds[_address] = _id;
 
