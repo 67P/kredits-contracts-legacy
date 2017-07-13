@@ -5,6 +5,12 @@ import './Token.sol';
 import './Contributors.sol';
 
 contract Operator is Ownable {
+  struct Contributor {
+    address account;
+    string profileHash;
+    bool exists;
+    bool isCore;
+  }
   struct Proposal {
     address creator;
     uint recipientId;
@@ -53,11 +59,11 @@ contract Operator is Ownable {
     return contributors.contributorsCount();
   }
 
-  function addContributor(address _address, string _profileHash, bool isCore) coreOnly {
+  function addContributor(address _address, bytes32 _profileHash, bool isCore) coreOnly {
     contributors.addContributor(_address, _profileHash, isCore);
   }
 
-  function updateContributorProfileHash(uint _id, string _profileHash) coreOnly {
+  function updateContributorProfileHash(uint _id, bytes32 _profileHash) coreOnly {
     contributors.updateContributorProfileHash(_id, _profileHash);
   }
 
@@ -65,7 +71,15 @@ contract Operator is Ownable {
     contributors.updateContributorAddress(_id, _oldAddress, _newAddress);
     kredits.migrateBalance(_oldAddress, _newAddress);
   }
-
+  
+  function getContributor(uint _id) constant returns (address account, bytes32 profileHash, bool isCore) {
+    uint8 profileHashFunction;
+    uint8 profileHashSize;
+    bool exists;
+    (account, profileHash, profileHashFunction, profileHashSize,  isCore, exists) = contributors.contributors(_id);
+    if(!exists) { throw; }
+  }
+  
   function proposalsCount() constant returns (uint) {
     return proposals.length;
   }

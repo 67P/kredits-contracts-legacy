@@ -7,21 +7,23 @@ contract Contributors is Ownable, Operatable {
 
   struct Contributor {
     address account;
-    string profileHash;
-    bool exists;
+    bytes32 profileHash;
+    uint8 profileHashFunction;
+    uint8 profileHashSize;
     bool isCore;
+    bool exists;
   }
 
   mapping (address => uint) public contributorIds;
   mapping (uint => Contributor) public contributors;
   uint public contributorsCount;
 
-  event ContributorProfileUpdated(uint id, string oldProfileHash, string newProfileHash);
+  event ContributorProfileUpdated(uint id, bytes32 oldProfileHash, bytes32 newProfileHash);
   event ContributorAddressUpdated(uint id, address oldAddress, address newAddress);
-  event ContributorAdded(uint id, address _address, string profileHash);
+  event ContributorAdded(uint id, address _address, bytes32 profileHash);
 
-  function Contributors(string _profileHash) {
-    addContributor(msg.sender, _profileHash, true);
+  function Contributors() {
+    addContributor(msg.sender, '', true);
   }
 
   function coreContributorsCount() constant returns (uint) {
@@ -41,21 +43,25 @@ contract Contributors is Ownable, Operatable {
     ContributorAddressUpdated(_id, _oldAddress, _newAddress);
   }
 
-  function updateContributorProfileHash(uint _id, string _profileHash) onlyOperator {
+  function updateContributorProfileHash(uint _id, bytes32 _profileHash) onlyOperator {
     Contributor c = contributors[_id];
-    string _oldProfileHash = c.profileHash;
+    bytes32 _oldProfileHash = c.profileHash;
     c.profileHash = _profileHash;
+    c.profileHashFunction = 0x12;
+    c.profileHashSize = 0x20;
 
     ContributorProfileUpdated(_id, _oldProfileHash, c.profileHash); 
   }
 
-  function addContributor(address _address, string _profileHash, bool isCore) onlyOperator {
+  function addContributor(address _address, bytes32 _profileHash, bool isCore) onlyOperator {
     uint _id = contributorsCount + 1;
     if(contributors[_id].exists != true) {
       Contributor c = contributors[_id];
       c.exists = true;
       c.isCore = isCore;
       c.profileHash = _profileHash;
+      c.profileHashSize = 0x20;
+      c.profileHashFunction = 0x12;
       c.account = _address;
       contributorIds[_address] = _id;
 
