@@ -1,6 +1,7 @@
 pragma solidity ^0.4.11;
 
 import './dependencies/Ownable.sol';
+import './lib/ipfs-utils.sol';
 import './Token.sol';
 import './Contributors.sol';
 
@@ -61,7 +62,7 @@ contract Operator is Ownable {
     return contributors.contributorsCount();
   }
 
-  function addContributor(address _address, bytes32 _profileHash, bool isCore) coreOnly {
+  function addContributor(address _address, bytes _profileHash, bool isCore) coreOnly {
     contributors.addContributor(_address, _profileHash, isCore);
   }
 
@@ -74,12 +75,16 @@ contract Operator is Ownable {
     kredits.migrateBalance(_oldAddress, _newAddress);
   }
 
-  function getContributor(uint _id) constant returns (address account, bytes32 profileHash, bool isCore) {
+  function getContributor(uint _id) constant returns (address account, bytes hash, bool isCore) {
     uint8 hashFunction;
     uint8 hashSize;
     bool exists;
+
     (account, profileHash, hashFunction, hashSize,  isCore, exists) = contributors.contributors(_id);
+
     if (!exists) { throw; }
+
+    hash = ipfsUtils.combineHash(hashFunction, hashSize, profileHash)
   }
 
   function proposalsCount() constant returns (uint) {

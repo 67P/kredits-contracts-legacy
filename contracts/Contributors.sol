@@ -2,6 +2,7 @@ pragma solidity ^0.4.11;
 
 import './dependencies/Ownable.sol';
 import './dependencies/Operatable.sol';
+import './lib/ipfs-utils.sol';
 
 contract Contributors is Ownable, Operatable {
 
@@ -53,15 +54,17 @@ contract Contributors is Ownable, Operatable {
     ContributorProfileUpdated(_id, _oldProfileHash, c.profileHash);
   }
 
-  function addContributor(address _address, bytes32 _profileHash, bool isCore) onlyOperator {
+  function addContributor(address _address, bytes _profileHash, bool isCore) onlyOperator {
+    (hashFunction, hashSize, hash) = ipfsUtils.splitHash(_profileHash);
+
     uint _id = contributorsCount + 1;
     if (contributors[_id].exists != true) {
       Contributor c = contributors[_id];
       c.exists = true;
       c.isCore = isCore;
-      c.profileHash = _profileHash;
-      c.hashSize = 0x20;
-      c.hashFunction = 0x12;
+      c.hashFunction = hashFunction;
+      c.hashSize = hashSize;
+      c.profileHash = hash;
       c.account = _address;
       contributorIds[_address] = _id;
 
