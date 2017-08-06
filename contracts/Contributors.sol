@@ -4,7 +4,7 @@ import './dependencies/Ownable.sol';
 import './dependencies/Operatable.sol';
 import './lib/ipfs-utils.sol';
 
-contract Contributors is Ownable, Operatable {
+contract Contributors is Ownable, Operatable, ipfsUtils {
 
   struct Contributor {
     address account;
@@ -21,7 +21,7 @@ contract Contributors is Ownable, Operatable {
 
   event ContributorProfileUpdated(uint id, bytes32 oldProfileHash, bytes32 newProfileHash);
   event ContributorAddressUpdated(uint id, address oldAddress, address newAddress);
-  event ContributorAdded(uint id, address _address, bytes32 profileHash);
+  event ContributorAdded(uint id, address _address, bytes profileHash);
 
   function Contributors() {
     addContributor(msg.sender, '', true);
@@ -55,6 +55,9 @@ contract Contributors is Ownable, Operatable {
   }
 
   function addContributor(address _address, bytes _profileHash, bool isCore) onlyOperator {
+    uint8 hashFunction;
+    uint8 hashSize;
+    bytes32 hash;
     (hashFunction, hashSize, hash) = ipfsUtils.splitHash(_profileHash);
 
     uint _id = contributorsCount + 1;
@@ -69,6 +72,7 @@ contract Contributors is Ownable, Operatable {
       contributorIds[_address] = _id;
 
       contributorsCount += 1;
+
       ContributorAdded(_id, _address, _profileHash);
     }
   }

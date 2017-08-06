@@ -5,7 +5,7 @@ import './lib/ipfs-utils.sol';
 import './Token.sol';
 import './Contributors.sol';
 
-contract Operator is Ownable {
+contract Operator is Ownable, ipfsUtils {
 
   struct Contributor {
     address account;
@@ -78,13 +78,14 @@ contract Operator is Ownable {
   function getContributor(uint _id) constant returns (address account, bytes hash, bool isCore) {
     uint8 hashFunction;
     uint8 hashSize;
+    bytes32 profileHash;
     bool exists;
 
     (account, profileHash, hashFunction, hashSize,  isCore, exists) = contributors.contributors(_id);
 
     if (!exists) { throw; }
 
-    hash = ipfsUtils.combineHash(hashFunction, hashSize, profileHash)
+    hash = ipfsUtils.combineHash(hashFunction, hashSize, profileHash);
   }
 
   function proposalsCount() constant returns (uint) {
