@@ -20,8 +20,9 @@ set -e
 
 echo "trying to be smart and configuring a local KreditsChain with an account for you"
 
-parityAccounts=$($whichParity account list --chain=$CONFIGPATH)
-if [ "$parityAccounts" == "[]" ]; then
+account=$($whichParity account list --chain=$CONFIGPATH | tail -n 1)
+
+if [ "$account" == "" ]; then
   echo "seems you do not have any parity accounts for the KreditsChain"
 
   echo "press ENTER to continue and create a new parity account"
@@ -29,9 +30,6 @@ if [ "$parityAccounts" == "[]" ]; then
   echo "settig up a new account with password: $(cat $CONFIGDIR/parity-dev-password)"
   account=$($whichParity account new --password=$CONFIGDIR/parity-dev-password --chain=$CONFIGPATH)
   echo "created parity account: $account"
-else
-  tmp=${parityAccounts##*[}
-  account="${tmp%%[,|\]]*}"
 fi
 echo "using account $account; giving you some KreditsChain ether"
 
