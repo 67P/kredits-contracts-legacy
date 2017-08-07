@@ -58,6 +58,7 @@ contract Contributors is Ownable, Operatable, IpfsUtils  {
     uint8 hashFunction;
     uint8 hashSize;
     bytes32 hash;
+    (hashFunction, hashSize, hash) = splitHash(_profileHash);
 
     uint _id = contributorsCount + 1;
     if (contributors[_id].exists != true) {
