@@ -24,7 +24,7 @@ contract Contributors is Ownable, Operatable, IpfsUtils  {
   event ContributorAdded(uint id, address _address, bytes profileHash);
 
   function Contributors() {
-    bytes memory profileHash = 'QmdXMsswhDkuqWDQ5Qjr5thvYF668i7XVHwDoAoFkfcKWp';
+    bytes memory profileHash = '';
     addContributor(msg.sender, profileHash, true);
   }
 
