@@ -37,7 +37,6 @@ module.exports = function(web3, contractOpts = {}) {
 
   this.addContributor = function(address, profileHashBase58, isCore) {
     const profileHashHex = Buffer.from(base58.decode(profileHashBase58))
-                                 .slice(2) // strip first two bytes
                                  .toString('hex');
 
     return new Promise((resolve, reject) => {
@@ -51,7 +50,7 @@ module.exports = function(web3, contractOpts = {}) {
     return new Promise((resolve, reject) => {
       this.contract.getContributor(id, (err, res) => {
         if (err) { reject(err); return; }
-        const profileHashHex = '1220' + res[1].replace('0x','');
+        const profileHashHex = res[1].replace('0x','');
         const profileHashBase58 = base58.encode(new Buffer(profileHashHex, 'hex'));
         const contributor = {
           id: id,
