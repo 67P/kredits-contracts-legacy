@@ -2,9 +2,9 @@ pragma solidity ^0.4.11;
 
 import './dependencies/Ownable.sol';
 import './dependencies/Operatable.sol';
-import './lib/ipfs-utils.sol';
+import './dependencies/IpfsUtils.sol';
 
-contract Contributors is Ownable, Operatable, ipfsUtils {
+contract Contributors is Ownable, Operatable, IpfsUtils  {
 
   struct Contributor {
     address account;
@@ -58,7 +58,6 @@ contract Contributors is Ownable, Operatable, ipfsUtils {
     uint8 hashFunction;
     uint8 hashSize;
     bytes32 hash;
-    (hashFunction, hashSize, hash) = ipfsUtils.splitHash(_profileHash);
 
     uint _id = contributorsCount + 1;
     if (contributors[_id].exists != true) {

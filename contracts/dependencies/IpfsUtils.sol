@@ -1,6 +1,6 @@
 pragma solidity ^0.4.11;
 
-contract ipfsUtils {
+contract IpfsUtils {
 
   function splitHash(bytes source) returns(uint8, uint8, bytes32 hash) {
     uint8 tag = uint8(source[0]);

@@ -1,11 +1,11 @@
 pragma solidity ^0.4.11;
 
 import './dependencies/Ownable.sol';
-import './lib/ipfs-utils.sol';
+import './dependencies/IpfsUtils.sol';
 import './Token.sol';
 import './Contributors.sol';
 
-contract Operator is Ownable, ipfsUtils {
+contract Operator is Ownable, IpfsUtils {
 
   struct Contributor {
     address account;
@@ -85,7 +85,7 @@ contract Operator is Ownable, ipfsUtils {
 
     if (!exists) { throw; }
 
-    hash = ipfsUtils.combineHash(hashFunction, hashSize, profileHash);
+    hash = combineHash(hashFunction, hashSize, profileHash);
   }
 
   function proposalsCount() constant returns (uint) {
