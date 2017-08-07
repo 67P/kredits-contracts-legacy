@@ -20,7 +20,7 @@ set -e
 
 echo "trying to be smart and configuring a local KreditsChain with an account for you"
 
-account=$($whichParity account list --chain=$CONFIGPATH | tail -n 1)
+account=$($whichParity account list --chain=$CONFIGPATH | head -n 1)
 
 if [ "$account" == "" ]; then
   echo "seems you do not have any parity accounts for the KreditsChain"
