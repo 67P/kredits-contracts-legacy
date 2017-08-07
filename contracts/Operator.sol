@@ -62,12 +62,20 @@ contract Operator is Ownable, IpfsUtils {
     return contributors.contributorsCount();
   }
 
-  function addContributor(address _address, bytes _profileHash, bool isCore) coreOnly {
-    contributors.addContributor(_address, _profileHash, isCore);
+  function addContributor(address _address, bytes _profileHash, bool _isCore) coreOnly {
+    uint8 _hashFunction;
+    uint8 _hashSize;
+    bytes32 _hash;
+    (_hashFunction, _hashSize, _hash) = splitHash(_profileHash);
+    contributors.addContributor(_address, _hashFunction, _hashSize, _hash, _isCore);
   }
 
-  function updateContributorProfileHash(uint _id, bytes32 _profileHash) coreOnly {
-    contributors.updateContributorProfileHash(_id, _profileHash);
+  function updateContributorProfileHash(uint _id, bytes _profileHash) coreOnly {
+    uint8 _hashFunction;
+    uint8 _hashSize;
+    bytes32 _hash;
+    (_hashFunction, _hashSize, _hash) = splitHash(_profileHash);
+    contributors.updateContributorProfileHash(_id, _hashFunction, _hashSize, _hash);
   }
 
   function updateContributorAddress(uint _id, address _oldAddress, address _newAddress) coreOnly {

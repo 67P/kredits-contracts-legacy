@@ -21,11 +21,10 @@ contract Contributors is Ownable, Operatable, IpfsUtils  {
 
   event ContributorProfileUpdated(uint id, bytes32 oldProfileHash, bytes32 newProfileHash);
   event ContributorAddressUpdated(uint id, address oldAddress, address newAddress);
-  event ContributorAdded(uint id, address _address, bytes profileHash);
+  event ContributorAdded(uint id, address _address);
 
   function Contributors() {
-    bytes memory profileHash = 'QmdXMsswhDkuqWDQ5Qjr5thvYF668i7XVHwDoAoFkfcKWp';
-    addContributor(msg.sender, profileHash, true);
+    addContributor(msg.sender, 0, 0, 0, true);
   }
 
   function coreContributorsCount() constant returns (uint) {
@@ -45,36 +44,31 @@ contract Contributors is Ownable, Operatable, IpfsUtils  {
     ContributorAddressUpdated(_id, _oldAddress, _newAddress);
   }
 
-  function updateContributorProfileHash(uint _id, bytes32 _profileHash) onlyOperator {
+  function updateContributorProfileHash(uint _id, uint8 _hashFunction, uint8 _hashSize, bytes32 _profileHash) onlyOperator {
     Contributor c = contributors[_id];
     bytes32 _oldProfileHash = c.profileHash;
     c.profileHash = _profileHash;
-    c.hashFunction = 0x12;
-    c.hashSize = 0x20;
+    c.hashFunction = _hashFunction;
+    c.hashSize = _hashSize;
 
     ContributorProfileUpdated(_id, _oldProfileHash, c.profileHash);
   }
 
-  function addContributor(address _address, bytes _profileHash, bool isCore) onlyOperator {
-    uint8 hashFunction;
-    uint8 hashSize;
-    bytes32 hash;
-    (hashFunction, hashSize, hash) = splitHash(_profileHash);
-
+  function addContributor(address _address, uint8 _hashFunction, uint8 _hashSize, bytes32 _profileHash, bool isCore) onlyOperator {
     uint _id = contributorsCount + 1;
     if (contributors[_id].exists != true) {
       Contributor c = contributors[_id];
       c.exists = true;
       c.isCore = isCore;
-      c.hashFunction = hashFunction;
-      c.hashSize = hashSize;
-      c.profileHash = hash;
+      c.hashFunction = _hashFunction;
+      c.hashSize = _hashSize;
+      c.profileHash = _profileHash;
       c.account = _address;
       contributorIds[_address] = _id;
 
       contributorsCount += 1;
 
-      ContributorAdded(_id, _address, _profileHash);
+      ContributorAdded(_id, _address);
     }
   }
 
