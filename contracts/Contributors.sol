@@ -17,7 +17,7 @@ contract Contributors is Ownable, Operatable, IpfsUtils  {
 
   mapping (address => uint) public contributorIds;
   mapping (uint => Contributor) public contributors;
-  uint public contributorsCount;
+  uint256 public contributorsCount;
 
   event ContributorProfileUpdated(uint id, bytes32 oldProfileHash, bytes32 newProfileHash);
   event ContributorAddressUpdated(uint id, address oldAddress, address newAddress);
@@ -29,7 +29,7 @@ contract Contributors is Ownable, Operatable, IpfsUtils  {
 
   function coreContributorsCount() constant returns (uint) {
     uint count = 0;
-    for (var i = 0; i < contributorsCount; i++) {
+    for (uint256 i = 1; i <= contributorsCount; i++) {
       if (contributors[i].isCore) {
         count += 1;
       }
@@ -38,7 +38,7 @@ contract Contributors is Ownable, Operatable, IpfsUtils  {
   }
 
   function updateContributorAddress(uint _id, address _oldAddress, address _newAddress) onlyOperator {
-    delete contributorIds[_oldAddress];
+    contributorIds[_oldAddress] = 0;
     contributorIds[_newAddress] = _id;
     contributors[_id].account = _newAddress;
     ContributorAddressUpdated(_id, _oldAddress, _newAddress);
