@@ -30,11 +30,11 @@
   "devDependencies": {
     "commander": "^2.9.0",
     "glob": "*",
-    "solc": "*",
     "web3": "*",
     "async": "*"
   },
   "dependencies": {
-    "base-58": "0.0.1"
+    "base-58": "0.0.1",
+    "solc": "*"
   }
 }
