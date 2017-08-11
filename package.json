@@ -21,6 +21,7 @@
     "console": "node scripts/console.js",
     "inspect": "node scripts/inspect.js",
     "package": "scripts/package.sh",
+    "watch": "scripts/watch.js",
     "seed": "node scripts/seed.js"
   },
   "author": "Michael Bumann",

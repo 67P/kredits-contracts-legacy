@@ -12,15 +12,18 @@ const pkg = require(path.join(__dirname, '../package.json'));
 
 program
   .version(pkg.version)
-  .option('-w, --what <abi|address|bytecode>', 'what to inspect. default: address')
-  .option('-c, --contracts <Contract,Names>', 'comma sparated list of contracts to deploy. default: all contracts found in the meatadata file', function (val) { return val.split(','); })
-  .option('-r, --raw', 'do not print contract names (when piping output somewhere)')
   .option('-d, --directory <path/to/directory>', 'absolute(!) direcoty path where to find the metadata files.')
-  .option('-p, --provider-url <url>', 'Ethereum RPC provider url. default: dev=localhost:8545 test/main=parity.kosmos.org')
+  .option('-w, --write', 'write the address book file to <parity dir>/keys/<chain name>/address_book.json')
+  .option('--parity-dir', 'parity root share directory. default: ~/.local/share/io.parity.ethereum')
+  .option('-p, --provider-url <url>', 'Ethereum RPC provider url. default: localhost:8545')
   .parse(process.argv);
 
 let web3 = new Web3(new Web3.providers.HttpProvider(program.providerUrl));
 let networkId = web3.version.network;
+const parityConfig = require(path.join(__dirname, '../config/parity-dev-chain.json'));
+let chainName = parityConfig['name'];
+let parityDir = program.parityDir || path.join(process.env.HOME, '.local/share/io.parity.ethereum/');
+let addressBookPath = path.join(parityDir, 'keys', chainName, 'address_book.json');
 
 let addresses, abi;
 if (program.directory) {
@@ -51,4 +54,9 @@ Object.keys(address).forEach(contractName => {
     uuid: null
   };
 });
-console.log(JSON.stringify(addressBook));
+if (program.write) {
+  fs.writeFileSync(addressBookPath, JSON.stringify(addressBook));
+  console.log(`Written address book to ${addressBookPath}. \nPlease restart parity!`);
+} else {
+  console.log(JSON.stringify(addressBook));
+}
