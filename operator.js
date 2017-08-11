@@ -79,12 +79,13 @@ module.exports = function(web3, contractOpts = {}) {
     return this.getValueFromContract('proposals', i);
   };
 
+  this.addProposal = this.contract.addProposal;
+  this.vote        = this.contract.vote;
+
   //
   // Events
   //
 
-  this.allEvents = function(filters = {}) {
-    return this.contract.allEvents(filters);
-  };
+  this.allEvents = this.contract.allEvents;
 
 };
