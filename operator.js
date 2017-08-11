@@ -31,6 +31,10 @@ module.exports = function(web3, contractOpts = {}) {
     });
   };
 
+  //
+  // Contributors
+  //
+
   this.contributorsCount = function() {
     return this.getValueFromContract('contributorsCount');
   };
@@ -63,12 +67,24 @@ module.exports = function(web3, contractOpts = {}) {
     });
   };
 
+  //
+  // Proposals
+  //
+
   this.proposalsCount = function() {
     return this.getValueFromContract('proposalsCount');
   };
 
   this.proposals = function(i) {
     return this.getValueFromContract('proposals', i);
+  };
+
+  //
+  // Events
+  //
+
+  this.allEvents = function(filters = {}) {
+    return this.contract.allEvents(filters);
   };
 
 };
