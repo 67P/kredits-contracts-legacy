@@ -63,4 +63,12 @@ module.exports = function(web3, contractOpts = {}) {
     });
   };
 
+  this.proposalsCount = function() {
+    return this.getValueFromContract('proposalsCount');
+  };
+
+  this.proposals = function(i) {
+    return this.getValueFromContract('proposals', i);
+  };
+
 };
