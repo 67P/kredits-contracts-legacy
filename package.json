@@ -9,7 +9,8 @@
     "kredits-seed": "scripts/seed.js",
     "kredits-console": "scripts/console.js",
     "kredits-inspect": "scripts/inspect.js",
-    "kredits-parity": "scripts/parity.sh"
+    "kredits-parity": "scripts/parity.sh",
+    "kredits-watch": "scripts/watch.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
