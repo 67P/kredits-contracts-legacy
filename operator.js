@@ -4,6 +4,11 @@ const addresses = require('./lib/address.js');
 const base58 = require('base-58');
 
 module.exports = function(web3, contractOpts = {}) {
+
+  //
+  // Config
+  //
+
   this.networkId = contractOpts['networkId'] || web3.version.network;
   this.contractName = 'Operator';
 
@@ -21,6 +26,10 @@ module.exports = function(web3, contractOpts = {}) {
   if (!this.config.address) { throw 'address not found for contract: ' + this.contractName;}
 
   this.contract = web3.eth.contract(this.config.abi).at(this.config.address);
+
+  //
+  // Utils
+  //
 
   this.getValueFromContract = function(contractMethod, ...args) {
     return new Promise((resolve, reject) => {
