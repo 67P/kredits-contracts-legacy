@@ -83,7 +83,7 @@ contract Operator is Ownable, IpfsUtils {
     kredits.migrateBalance(_oldAddress, _newAddress);
   }
 
-  function getContributor(uint _id) constant returns (address account, bytes hash, bool isCore) {
+  function getContributor(uint _id) constant returns (address account, string hash, bool isCore) {
     uint8 hashFunction;
     uint8 hashSize;
     bytes32 profileHash;
@@ -93,7 +93,7 @@ contract Operator is Ownable, IpfsUtils {
 
     if (!exists) { throw; }
 
-    hash = combineHash(hashFunction, hashSize, profileHash);
+    hash = string(combineHash(hashFunction, hashSize, profileHash));
   }
 
   function proposalsCount() constant returns (uint) {
