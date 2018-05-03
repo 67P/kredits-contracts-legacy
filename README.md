@@ -1,3 +1,10 @@
+# DEPRECATION WARNING
+
+This repo has been deprecated in favor of a new one, which is using the Truffle
+framework and a new JavaScript API wrapper for clients to integrate:
+
+https://github.com/67P/kredits-contracts
+
 # Kredits Contracts
 
 This repository contains source code and related files for the Ethereum smart
